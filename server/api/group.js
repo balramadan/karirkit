@@ -20,7 +20,7 @@ groupRouter.get(
       // 2. Kumpulkan semua ID aplikasi dari semua grup
       const allApplicationIds = rawGroups.reduce((acc, group) => {
         if (group.applications && group.applications.size > 0) {
-          acc.push(...group.applications.keys());
+          acc.push(...Array.from(group.applications.keys()));
         }
         return acc;
       }, []);
@@ -39,7 +39,7 @@ groupRouter.get(
       // 4. Gabungkan (populate) data aplikasi ke dalam grup masing-masing
       const populatedGroups = rawGroups.map((group) => {
         const populatedApplications = {};
-        if (group.applications) {
+        if (group.applications && typeof group.applications.keys === 'function') {
           for (const appId of group.applications.keys()) {
             if (applicationMap.has(appId)) {
               populatedApplications[appId] = applicationMap.get(appId);

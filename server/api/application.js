@@ -1,6 +1,8 @@
 import express from "express";
 import passport from "passport";
+import mongoose from "mongoose";
 import Application from "../schema/applications.js";
+import Groups from "../schema/groups.js";
 
 const appRouter = express.Router();
 
@@ -57,14 +59,49 @@ appRouter.post(
   "/",
   passport.authenticate("jwt", { session: false }),
   async (req, res) => {
+    // Gunakan transaksi untuk memastikan konsistensi data
+    const session = await mongoose.startSession();
+    session.startTransaction();
     try {
-      const doc = await Application.create({
-        ...req.body,
-        user: req.user.id, // Selalu kaitkan dengan user yang sedang login
-      });
-      res.status(201).json(doc);
+      const { groupId, ...appData } = req.body;
+
+      // 1. Buat dokumen Application baru
+      const newApplicationArray = await Application.create(
+        [
+          {
+            ...appData,
+            user: req.user.id, // Selalu kaitkan dengan user yang sedang login
+          },
+        ],
+        { session }
+      );
+      const newApplication = newApplicationArray[0];
+
+      // 2. Jika groupId diberikan, tambahkan aplikasi ke grup tersebut
+      if (groupId) {
+        const group = await Groups.findOne({
+          _id: groupId,
+          user: req.user.id, // Pastikan user memiliki grup ini
+        }).session(session);
+
+        if (!group) {
+          // Jika grup tidak ditemukan, batalkan transaksi
+          throw new Error("Group not found or permission denied");
+        }
+
+        // Tambahkan ID aplikasi baru ke map di dalam grup
+        group.applications.set(newApplication._id.toString(), newApplication._id);
+        await group.save({ session });
+      }
+
+      // Jika semua berhasil, commit transaksi
+      await session.commitTransaction();
+      res.status(201).json(newApplication);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      await session.abortTransaction();
+      res.status(500).json({ message: error.message || "Failed to create application" });
+    } finally {
+      session.endSession();
     }
   }
 );

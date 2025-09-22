@@ -1,9 +1,11 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
+import { api } from "@/lib/axios";
 
-export const groupStore = defineStore(
+export const useGroupStore = defineStore(
   "group",
   () => {
+    const groups = ref()
     const activeGroup = ref();
 
     /**
@@ -15,7 +17,17 @@ export const groupStore = defineStore(
       activeGroup.value = id;
     }
 
-    return { activeGroup, setGroup };
+    async function getGroups() {
+      try {
+        const { data } = await api.get("/v1/group");
+    
+        groups.value = data;
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    return { groups, activeGroup, setGroup, getGroups};
   },
   {
     persist: {

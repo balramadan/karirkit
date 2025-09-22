@@ -31,24 +31,20 @@
         <Select
           v-model="selectedGroup"
           :options="groups"
+          option-label="name"
+          option-value="_id"
           placeholder="Select Group"
           size="small"
           class="!border-blue-500"
-          :default-value="groups[0]"
           :pt="{
+            label: {
+              class: '!text-blue-500',
+            },
             option: {
               class: 'aria-selected:!bg-blue-500/20 hover:!bg-blue-500/10',
             },
           }"
         >
-          <template #value="slotProps">
-            <div v-if="slotProps.value" class="">
-              <p class="text-blue-500">{{ slotProps.value.name }}</p>
-            </div>
-            <span v-else>
-              {{ slotProps.placeholder }}
-            </span>
-          </template>
           <template #option="slotProps">
             <div :class="['flex items-center']">
               <div>{{ slotProps.option.name }}</div>
@@ -71,6 +67,7 @@
             </div>
           </template>
         </Select>
+        {{ selectedGroup }}
       </div>
     </div>
     <div
@@ -129,11 +126,19 @@
     draggable
     modal
   >
-    <Form v-slot="$form" class="w-full">
+    <Form v-slot="$form" class="w-full" @submit="addGroup">
       <div class="flex flex-col gap-2">
-        <label for="name">Group Name</label>
-        <InputText name="name" class="w-full" />
+        <label for="groupName">Group Name</label>
+        <InputText
+          name="groupName"
+          class="!w-full !text-sm focus:!border-blue-700"
+        />
       </div>
+      <Button
+        type="submit"
+        class="mt-5 !text-sm w-full !bg-blue-700 !border-none !transition-all !duration-300 !ease-in-out dark:!text-white hover:!bg-blue-900"
+        label="Add"
+      />
     </Form>
   </Dialog>
 
@@ -176,7 +181,6 @@
             class="mb-4 mx-4 border-t border-0 border-surface-200 dark:border-surface-700"
           />
           <a
-            v-ripple
             class="m-4 flex items-center cursor-pointer p-4 gap-2 rounded text-surface-700 hover:bg-surface-100 dark:text-surface-0 dark:hover:bg-surface-800 duration-150 transition-colors p-ripple"
           >
             <Avatar image="/images/avatar/amyelsner.png" shape="circle" />
@@ -192,6 +196,8 @@ import { ref, onMounted } from "vue";
 import { Icon } from "@iconify/vue";
 import { api } from "@/lib/axios";
 import { Form } from "@primevue/forms";
+import { useToast } from "primevue/usetoast";
+import { useGroupStore } from "@/stores/group";
 import Image from "primevue/image";
 import Select from "primevue/select";
 import Dialog from "primevue/dialog";
@@ -199,12 +205,12 @@ import Drawer from "primevue/drawer";
 import Button from "primevue/button";
 import Avatar from "primevue/avatar";
 import Menu from "primevue/menu";
-import InputText from "primevue/inputtext"
+import InputText from "primevue/inputtext";
 import SwitchMode from "@/components/SwitchMode.vue";
 
 const menu = ref();
 const selectedGroup = ref();
-const groups = ref([{ name: "All" }]);
+const groups = ref();
 const addGroupDialog = ref(false);
 const items = ref([
   {
@@ -219,6 +225,8 @@ const items = ref([
   },
 ]);
 
+const groupStore = useGroupStore();
+const toast = useToast();
 const drawer = ref(false);
 const toggle = (event: any) => {
   menu.value.toggle(event);
@@ -229,21 +237,44 @@ onMounted(async () => {
 });
 
 const getGroups = async () => {
-  try {
-    const { data } = await api.get("/v1/group");
-
-    groups.value.push = data;
-  } catch (err) {
-    console.error(err);
-  }
+  await groupStore.getGroups();
+  groups.value = groupStore.groups;
 };
 
 const addGroup = async (e: any) => {
   try {
-    console.log(e)
+    console.log(e?.states.groupName.value);
+    const response = await api.post(
+      "/v1/group",
+      {
+        name: e?.states.groupName.value,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (response.status !== 201) {
+      toast.add({
+        severity: "error",
+        summary: "Failed",
+        detail: response.data?.message,
+        life: 3000,
+      });
+    }
+
+    await getGroups();
+    toast.add({
+      severity: "success",
+      summary: "Success",
+      detail: response.data?.message,
+      life: 3000,
+    });
   } catch (err) {
-    console.error(err)
+    console.error(err);
   }
-}
+};
 </script>
 <style scoped></style>
