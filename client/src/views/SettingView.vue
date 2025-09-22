@@ -1,7 +1,7 @@
 <template>
   <DashboardLayout>
     <template #default>
-      <div class="grid grid-cols-1 md:grid-cols-12 gap-4 mt-5">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-4 my-5">
         <div class="sm:col-span-3 lg:col-span-2">
           <Settings />
         </div>
@@ -42,7 +42,7 @@ watch(
 );
 
 onMounted(async () => {
-  const response = await api.get(`${API_URL}/api/user`);
+  const response = await api.get(`${API_URL}/v1/user`);
 
   userData.value = response.data;
 });

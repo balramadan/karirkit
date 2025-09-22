@@ -2,8 +2,9 @@
   <div>
     <Menu :model="mainMenus" class="!border-none !text-sm dark:!bg-[#131313]">
       <template #item="{ item, props }">
-        <a
-          :href="item.url"
+        <RouterLink
+          v-if="item.url"
+          :to="item.url"
           :class="[
             'flex flex-row items-center gap-2 cursor-pointer p-2 rounded-lg',
             {
@@ -11,12 +12,17 @@
             },
           ]"
         >
-          <Icon :icon="`${item.icon}`" />
+          <Icon v-if="item.icon" :icon="item.icon" />
           <span class="text-sm">{{ item.label }}</span>
-        </a>
+        </RouterLink>
+        <div v-else class="flex flex-row items-center gap-2 p-2 rounded-lg">
+          <Icon v-if="item.icon" :icon="item.icon" />
+          <span class="text-sm font-semibold text-black/60 dark:text-white/60">{{ item.label }}</span>
+        </div>
       </template>
     </Menu>
   </div>
+  <hr class="block md:hidden mt-2.5 text-black/10 dark:text-white/10" />
 </template>
 <script setup lang="ts">
 import { ref, computed } from "vue";

@@ -29,7 +29,7 @@ export async function listByStatus(
   limit = 1000,
   sort = "position"
 ) {
-  const { data } = await api.get<ListResponse>("/api/application", {
+  const { data } = await api.get<ListResponse>("/v1/application", {
     params: { status, limit, sort },
   });
   return data.items;
@@ -39,13 +39,13 @@ export async function listByStatus(
  * This TypeScript function asynchronously retrieves application data based on the provided ID using an
  * API call.
  * @param {string} id - The `getApplication` function is an asynchronous function that takes a `string`
- * parameter `id`. This function makes a GET request to an API endpoint `/api/application` with the
+ * parameter `id`. This function makes a GET request to an API endpoint `/v1/application` with the
  * provided `id` as a query parameter. It then returns the data received from the API response.
  * @returns The `getApplication` function is returning the data fetched from the API endpoint
- * `/api/application?id=`.
+ * `/v1/application?id=`.
  */
 export async function getApplication(id: string) {
-  const { data } = await api.get(`/api/application?id=${id}`);
+  const { data } = await api.get(`/v1/application?id=${id}`);
 
   return data;
 }
@@ -57,10 +57,10 @@ export async function getApplication(id: string) {
  * `Partial<Application>`, which means it is an object that may contain some or all of the properties
  * defined in the `Application` interface.
  * @returns The `createApplication` function is returning the data received from the POST request to
- * the "/api/application" endpoint after creating a new application with the provided payload.
+ * the "/v1/application" endpoint after creating a new application with the provided payload.
  */
 export async function createApplication(payload: Partial<Application>) {
-  const { data } = await api.post<Application>("/api/application", payload);
+  const { data } = await api.post<Application>("/v1/application", payload);
   return data;
 }
 
@@ -80,7 +80,7 @@ export async function updateApplication(
   payload: Partial<Application>
 ) {
   const { data } = await api.patch<Application>(
-    `/api/application/${id}`,
+    `/v1/application/${id}`,
     payload
   );
   return data;
@@ -93,7 +93,7 @@ export async function updateApplication(
  * application that you want to delete.
  */
 export async function deleteApplication(id: string) {
-  await api.delete(`/api/application/${id}`);
+  await api.delete(`/v1/application/${id}`);
 }
 
 /**
@@ -105,5 +105,5 @@ export async function deleteApplication(id: string) {
 export async function reorderApplications(
   updates: { id: string; status: Status; position: number }[]
 ) {
-  await api.post("/api/application/reorder", { updates });
+  await api.post("/v1/application/reorder", { updates });
 }

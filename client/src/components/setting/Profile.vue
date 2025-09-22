@@ -45,7 +45,7 @@
         class="hidden lg:flex lg:flex-col lg:col-span-2 justify-start items-baseline gap-2"
       >
         <p class="text-sm text-left">Avatar</p>
-        <Avatar label="KK" size="xlarge" />
+        <Avatar :label="getInials()" size="xlarge" />
         <FileUpload
           class="!text-sm !bg-blue-700 !border-none !transition-all !duration-300 !ease-in-out hover:!bg-blue-900 dark:!text-white"
           mode="basic"
@@ -87,8 +87,17 @@ const name = ref(props.data.data?.name);
 const email = ref(props.data.data?.email);
 const password = ref("");
 
-async function changeProfile() {
-  const data = await api.patch("/api/user", { name: name.value, email: email.value });
+const getInials = () => {
+  const nameParts = name.value.split(" ");
+  let initials = "";
+  for (let i = 0; i < nameParts.length; i++) {
+    initials += nameParts[i].charAt(0);
+  }
+  return initials.toUpperCase();
+}
+
+const changeProfile = async () => {
+  const data = await api.patch("/v1/user", { name: name.value, email: email.value });
   if (data.status === 500) {
     toast.add({
       summary: "Failed",

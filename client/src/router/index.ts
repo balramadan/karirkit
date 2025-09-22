@@ -14,6 +14,14 @@ const router = createRouter({
       },
     },
     {
+      path: "/signup",
+      name: "signup",
+      component: () => import("@/views/RegisterView.vue"),
+      meta: {
+        title: "Sign up | KarirKit",
+      },
+    },
+    {
       path: "/signin",
       name: "signin",
       component: () => import("@/views/LoginView.vue"),

@@ -1,193 +1,249 @@
 <template>
-  <Disclosure
-    as="nav"
-    class="relative bg-white dark:bg-[#131313] shadow-xs"
-    v-slot="{ open }"
+  <div
+    class="flex items-center justify-between py-5 px-5 sm:px-6 lg:px-20 shadow-sm"
   >
-    <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-      <div class="relative flex h-16 items-center justify-between">
-        <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
-          <!-- Mobile menu button-->
-          <DisclosureButton
-            class="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-white/5 hover:text-white focus:outline-2 focus:-outline-offset-1 focus:outline-indigo-500"
-          >
-            <span class="absolute -inset-0.5" />
-            <span class="sr-only">Open main menu</span>
-            <Icon
-              icon="tdesign:menu-fold"
-              v-if="!open"
-              class="block size-6"
-              aria-hidden="true"
-            />
-            <Icon
-              icon="tdesign:close"
-              v-else
-              class="block size-6"
-              aria-hidden="true"
-            />
-          </DisclosureButton>
-        </div>
-        <div
-          class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start"
+    <div class="relative flex md:hidden items-center justify-between">
+      <Icon
+        icon="tdesign:menu-fold"
+        class="block size-5"
+        aria-hidden="true"
+        @click="drawer = true"
+      />
+    </div>
+    <div
+      class="flex flex-1 items-center justify-center md:items-stretch md:justify-start"
+    >
+      <Image
+        class="h-8 w-auto light:block dark:hidden"
+        height="32"
+        width="32"
+        src="/KarirKit-light.png"
+        alt="Your Company"
+      />
+      <Image
+        class="h-8 w-auto light:hidden dark:block"
+        height="32"
+        width="32"
+        src="/KarirKit-dark.png"
+        alt="Your Company"
+      />
+      <div class="hidden md:ml-6 md:block">
+        <Select
+          v-model="selectedGroup"
+          :options="groups"
+          placeholder="Select Group"
+          size="small"
+          class="!border-blue-500"
+          :default-value="groups[0]"
+          :pt="{
+            option: {
+              class: 'aria-selected:!bg-blue-500/20 hover:!bg-blue-500/10',
+            },
+          }"
         >
-          <div class="flex shrink-0 items-center">
-            <Image
-              class="h-8 w-auto light:block dark:hidden"
-              height="32"
-              width="32"
-              src="/KarirKit-light.png"
-              alt="Your Company"
-            />
-            <Image
-              class="h-8 w-auto light:hidden dark:block"
-              height="32"
-              width="32"
-              src="/KarirKit-dark.png"
-              alt="Your Company"
-            />
-          </div>
-          <div class="hidden sm:ml-6 sm:block">
-            <div class="flex space-x-4">
-              <a
-                v-for="item in menu"
-                :key="item.name"
-                :href="item.href"
-                :class="[
-                  item.current
-                    ? 'bg-blue-800 text-white dark:bg-white/10'
-                    : 'text-black hover:bg-blue-800/5 dark:text-white dark:hover:bg-white/5 dark:hover:text-white',
-                  'rounded-md px-3 py-2 text-sm font-medium',
-                ]"
-                :aria-current="item.current ? 'page' : undefined"
-                >{{ item.name }}</a
-              >
+          <template #value="slotProps">
+            <div v-if="slotProps.value" class="">
+              <p class="text-blue-500">{{ slotProps.value.name }}</p>
             </div>
-          </div>
-        </div>
-        <div
-          class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:flex sm:gap-4 sm:inset-auto sm:ml-6 sm:pr-0"
-        >
-          <SwitchMode />
-
-          <button
-            type="button"
-            class="relative rounded-full p-1 text-gray-400 focus:outline-2 focus:outline-offset-2 focus:outline-indigo-500 dark:hover:text-white"
-          >
-            <span class="absolute -inset-1.5" />
-            <span class="sr-only">View notifications</span>
-            <Icon
-              icon="tdesign:notification-filled"
-              class="size-6 md:size-4"
-              aria-hidden="true"
-            />
-          </button>
-
-          <!-- Profile dropdown -->
-          <Menu as="div" class="relative ml-3">
-            <MenuButton
-              class="relative flex rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
-            >
-              <span class="absolute -inset-1.5" />
-              <span class="sr-only">Open user menu</span>
-              <img
-                class="size-8 rounded-full bg-gray-800 outline -outline-offset-1 outline-white/10"
-                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                alt=""
-              />
-            </MenuButton>
-
-            <transition
-              enter-active-class="transition ease-out duration-100"
-              enter-from-class="transform opacity-0 scale-95"
-              enter-to-class="transform scale-100"
-              leave-active-class="transition ease-in duration-75"
-              leave-from-class="transform scale-100"
-              leave-to-class="transform opacity-0 scale-95"
-            >
-              <MenuItems
-                class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg outline outline-black/5 dark:bg-gray-800 dark:shadow-none dark:-outline-offset-1 dark:outline-white/10"
+            <span v-else>
+              {{ slotProps.placeholder }}
+            </span>
+          </template>
+          <template #option="slotProps">
+            <div :class="['flex items-center']">
+              <div>{{ slotProps.option.name }}</div>
+            </div>
+          </template>
+          <template #footer>
+            <div class="p-2.5">
+              <Button
+                @click="addGroupDialog = true"
+                label="Add New"
+                severity="secondary"
+                variant="text"
+                size="small"
+                fluid
               >
-                <MenuItem v-slot="{ active }">
-                  <a
-                    href="#"
-                    :class="[
-                      active
-                        ? 'bg-gray-100 outline-hidden dark:bg-white/5'
-                        : '',
-                      'block px-4 py-2 text-sm text-gray-700 dark:text-gray-300',
-                    ]"
-                    >Your profile</a
-                  >
-                </MenuItem>
-                <MenuItem v-slot="{ active }">
-                  <a
-                    href="#"
-                    :class="[
-                      active
-                        ? 'bg-gray-100 outline-hidden dark:bg-white/5'
-                        : '',
-                      'block px-4 py-2 text-sm text-gray-700 dark:text-gray-300',
-                    ]"
-                    >Settings</a
-                  >
-                </MenuItem>
-                <MenuItem v-slot="{ active }">
-                  <a
-                    href="#"
-                    :class="[
-                      active
-                        ? 'bg-gray-100 outline-hidden dark:bg-white/5'
-                        : '',
-                      'block px-4 py-2 text-sm text-gray-700 dark:text-gray-300',
-                    ]"
-                    >Sign out</a
-                  >
-                </MenuItem>
-              </MenuItems>
-            </transition>
-          </Menu>
-        </div>
+                <template #icon>
+                  <Icon icon="tdesign:folder-add-1" />
+                </template>
+              </Button>
+            </div>
+          </template>
+        </Select>
       </div>
     </div>
+    <div
+      class="absolute inset-y-0 right-0 flex items-center pr-2 md:static md:flex md:gap-4 md:inset-auto md:ml-6 md:pr-0"
+    >
+      <SwitchMode class="hidden sm:block" />
 
-    <DisclosurePanel class="sm:hidden">
-      <div class="space-y-1 px-2 pt-2 pb-3">
-        <DisclosureButton
-          v-for="item in menu"
-          :key="item.name"
-          as="a"
-          :href="item.href"
-          :class="[
-            item.current
-              ? 'bg-gray-900 text-white dark:bg-gray-950/50'
-              : 'text-gray-300 hover:bg-white/5 hover:text-white',
-            'block rounded-md px-3 py-2 text-base font-medium',
-          ]"
-          :aria-current="item.current ? 'page' : undefined"
-          >{{ item.name }}</DisclosureButton
-        >
+      <button
+        type="button"
+        class="hidden sm:block relative rounded-full p-1 text-gray-400 focus:outline-2 focus:outline-offset-2 focus:outline-indigo-500 dark:hover:text-white"
+      >
+        <span class="absolute -inset-1.5" />
+        <span class="sr-only">View notifications</span>
+        <Icon
+          icon="tdesign:notification-filled"
+          class="size-6 md:size-4"
+          aria-hidden="true"
+        />
+      </button>
+
+      <div class="">
+        <Avatar
+          label="P"
+          class="!size-9 !cursor-pointer"
+          shape="circle"
+          @click="toggle"
+        />
+        <Menu ref="menu" id="overlay_menu" :model="items" :popup="true">
+          <template #item="{ item, props }">
+            <RouterLink
+              v-if="item.url"
+              :to="item.url"
+              class="flex items-center"
+              v-bind="props.action"
+            >
+              <Icon
+                v-if="item.icon"
+                :icon="item.icon"
+                :class="[{ '!text-red-500': item.url === '/logout' }]"
+              />
+              <span :class="[{ 'text-red-500': item.url === '/logout' }]">{{
+                item.label
+              }}</span>
+            </RouterLink>
+          </template>
+        </Menu>
       </div>
-    </DisclosurePanel>
-  </Disclosure>
+    </div>
+  </div>
+
+  <Dialog
+    v-model:visible="addGroupDialog"
+    header="Add New Group"
+    class="w-[25rem]"
+    closable
+    draggable
+    modal
+  >
+    <Form v-slot="$form" class="w-full">
+      <div class="flex flex-col gap-2">
+        <label for="name">Group Name</label>
+        <InputText name="name" class="w-full" />
+      </div>
+    </Form>
+  </Dialog>
+
+  <Drawer v-model:visible="drawer">
+    <template #container="{ closeCallback }">
+      <div class="flex flex-col h-full gap-4">
+        <div class="flex items-center justify-between px-5 mt-4 shrink-0">
+          <span class="flex flex-row items-center gap-2">
+            <Image
+              src="/KarirKit-light.png"
+              class="w-auto light:block dark:hidden"
+              width="24"
+              alt="Logo"
+            />
+            <Image
+              src="/KarirKit-dark.png"
+              class="w-auto light:hidden dark:block"
+              width="24"
+              alt="Logo"
+            />
+            <span class="font-semibold text-xl text-primary">KarirKit</span>
+          </span>
+          <span>
+            <Button
+              type="button"
+              @click="closeCallback"
+              class="!text-black !border-black dark:!text-white dark:!border-white"
+              rounded
+              variant="outlined"
+            >
+              <template #icon>
+                <Icon icon="tdesign:close" />
+              </template>
+            </Button>
+          </span>
+        </div>
+        <div class="overflow-y-auto flex flex-col px-5"></div>
+        <div class="mt-auto">
+          <hr
+            class="mb-4 mx-4 border-t border-0 border-surface-200 dark:border-surface-700"
+          />
+          <a
+            v-ripple
+            class="m-4 flex items-center cursor-pointer p-4 gap-2 rounded text-surface-700 hover:bg-surface-100 dark:text-surface-0 dark:hover:bg-surface-800 duration-150 transition-colors p-ripple"
+          >
+            <Avatar image="/images/avatar/amyelsner.png" shape="circle" />
+            <span class="font-bold">Amy Elsner</span>
+          </a>
+        </div>
+      </div>
+    </template>
+  </Drawer>
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { Icon } from "@iconify/vue";
+import { api } from "@/lib/axios";
+import { Form } from "@primevue/forms";
 import Image from "primevue/image";
-import {
-  Disclosure,
-  DisclosureButton,
-  DisclosurePanel,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuItems,
-} from "@headlessui/vue";
+import Select from "primevue/select";
+import Dialog from "primevue/dialog";
+import Drawer from "primevue/drawer";
+import Button from "primevue/button";
+import Avatar from "primevue/avatar";
+import Menu from "primevue/menu";
+import InputText from "primevue/inputtext"
 import SwitchMode from "@/components/SwitchMode.vue";
 
-const menu = ref([
-  { name: "Kanban", href: "/kanban", current: true },
-  { name: "Groups", href: "/group", current: false },
+const menu = ref();
+const selectedGroup = ref();
+const groups = ref([{ name: "All" }]);
+const addGroupDialog = ref(false);
+const items = ref([
+  {
+    label: "Settings",
+    icon: "tdesign:setting",
+    url: "/settings#profile",
+  },
+  {
+    label: "Logout",
+    icon: "tdesign:logout",
+    url: "/logout",
+  },
 ]);
+
+const drawer = ref(false);
+const toggle = (event: any) => {
+  menu.value.toggle(event);
+};
+
+onMounted(async () => {
+  await getGroups();
+});
+
+const getGroups = async () => {
+  try {
+    const { data } = await api.get("/v1/group");
+
+    groups.value.push = data;
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const addGroup = async (e: any) => {
+  try {
+    console.log(e)
+  } catch (err) {
+    console.error(err)
+  }
+}
 </script>
-<style lang=""></style>
+<style scoped></style>

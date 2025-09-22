@@ -14,7 +14,6 @@ const userSchema = new Schema(
     password: { type: String, required: true },
     name: { type: String, required: true },
     photoUrl: { type: String },
-    groups: { type: Schema.Types.Map, ref: "Group" },
     cvs: [documentSchema],
     coverLetters: [documentSchema],
   },

@@ -11,6 +11,6 @@ export type ScrapeResult = {
 };
 
 export async function scrapeJob(url: string) {
-  const { data } = await api.post<ScrapeResult>("/api/scrape/job", { url });
+  const { data } = await api.post<ScrapeResult>("/v1/scrape/job", { url });
   return data;
 }

@@ -22,6 +22,7 @@ yarn-error.log*
 
 # IDE / Editor specific
 .vscode/
+/client/.vscode
 .idea/
 
 # OS generated files

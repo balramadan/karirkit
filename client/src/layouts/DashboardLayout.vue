@@ -1,7 +1,7 @@
 <template>
-  <div class="bg-white dark:bg-[#131313]">
+  <div class="bg-white dark:bg-[#1E1E2C] min-h-screen">
     <HeaderDashboard /> 
-    <main class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8"><slot /></main>
+    <main class="px-5 sm:px-6 lg:px-16"><slot /></main>
     <footer></footer>
   </div>
 </template>

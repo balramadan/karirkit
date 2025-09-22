@@ -1,10 +1,10 @@
 <template>
   <div class="grid grid-cols-1 min-h-screen md:grid-cols-12">
     <div
-      class="flex flex-col gap-4 justify-center items-start px-20 col-span-1 w-full md:col-span-6 lg:col-span-5"
+      class="flex flex-col gap-4 justify-center items-start px-5 md:px-20 py-5 col-span-1 w-full md:col-span-6 lg:col-span-5"
     >
       <h3 class="font-bold text-2xl">Sign in to your account</h3>
-      <p class="text-sm text-black/60">
+      <p class="text-sm text-black/60 dark:text-white/60">
         Not a member?
         <RouterLink to="/signup" class="text-blue-700"
           >Free to sign up here</RouterLink
@@ -34,7 +34,7 @@
           >
         </div>
         <div class="flex flex-col gap-2 mt-5">
-          <label for="email" class="text-sm">Password</label>
+          <label for="password" class="text-sm">Password</label>
           <Password
             name="password"
             inputClass="!w-full !text-sm focus:!border-blue-700"
@@ -57,7 +57,7 @@
           >
         </div>
         <Button
-          class="mt-5 !text-sm w-full !bg-blue-700 !border-none !transition-all !duration-300 !ease-in-out hover:!bg-blue-900"
+          class="mt-5 !text-sm w-full !bg-blue-700 !border-none !transition-all !duration-300 !ease-in-out dark:!text-white hover:!bg-blue-900"
           label="Sign in"
           type="submit"
         />
@@ -86,12 +86,11 @@ import Button from "primevue/button";
 import Image from "primevue/image";
 import { Icon } from "@iconify/vue";
 import { useToast } from "primevue/usetoast";
-import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
+import router from "@/router";
 
 const toast = useToast();
 const authStore = useAuthStore();
-const router = useRouter();
 
 interface inputType {
   email: string;
@@ -130,7 +129,7 @@ const baseurl = import.meta.env.VITE_API_BASE_URL;
 
 const submitSignIn = async (e: any) => {
   try {
-    const response = await fetch(`${baseurl}/api/auth/signin`, {
+    const response = await fetch(`${baseurl}/v1/auth/signin`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

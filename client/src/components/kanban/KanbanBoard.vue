@@ -1,7 +1,9 @@
 <template>
-  <div class="flex flex-col gap-4 py-5">
+  <div
+    class="flex flex-col gap-4 bg-white dark:bg-transparent py-5 px-5 mt-4 shadow rounded-xl h-[83vh] max-h-[83vh]"
+  >
     <div class="flex items-center justify-between">
-      <h2 class="text-xl font-semibold text-black dark:text-white">Kanban</h2>
+      <h2 class="text-xl font-semibold text-black dark:text-white">Job Application</h2>
       <div class="flex items-center gap-2">
         <button
           class="rounded-md bg-blue-600 px-3 py-2 text-white cursor-pointer transition-all duration-300 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 disabled:opacity-60"
@@ -20,11 +22,11 @@
       </div>
     </div>
 
-    <div class="flex overflow-x-auto min-h-[70vh] pb-4">
+    <div id="container-kanban" class="flex overflow-x-scroll overflow-auto h-full gap-4">
       <div
         v-for="s in statuses"
         :key="s"
-        class="min-w-72 w-72 shrink-0 border border-black/10 bg-white py-3 dark:border-white/10 dark:bg-[#121212]"
+        class="min-w-64 w-64 h-fit shrink-0 border border-black/10 bg-blue-500/5 py-3 rounded-lg dark:border-white/10 dark:bg-[#2A2A3A]"
       >
         <div
           class="mb-3 flex items-center justify-between border-b border-black/10 pb-2 px-3 dark:border-white/10"
@@ -50,12 +52,12 @@
         >
           <template #item="{ element }">
             <div
-              class="rounded-md border border-black/10 bg-white p-3 dark:border-white/10 dark:bg-[#1a1a1a] group"
+              class="rounded-lg border border-black/10 bg-white p-3 shadow-sm dark:border-white/10 dark:bg-[#2A2A3A] group"
             >
-              <div class="text-sm font-medium text-black dark:text-white">
+              <div class="text-sm font-medium text-black dark:text-[#E0E0E0]">
                 {{ element.jobTitle }}
               </div>
-              <div class="text-xs text-black/60 dark:text-white/60">
+              <div class="text-xs text-black/60 dark:text-[#A0A0B0]">
                 {{ element.companyName }}
               </div>
               <div
@@ -223,7 +225,11 @@
       @hide="closeEditDialog"
       :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
     >
-      <form v-if="editingItem" class="space-y-3 pt-2" @submit.prevent="onUpdate">
+      <form
+        v-if="editingItem"
+        class="space-y-3 pt-2"
+        @submit.prevent="onUpdate"
+      >
         <input
           v-model="editForm.jobTitle"
           class="w-full rounded border border-black/10 px-2 py-2 text-sm text-black dark:text-white dark:border-white/10 dark:bg-transparent"
@@ -558,5 +564,8 @@ onMounted(refresh);
 </script>
 
 <style scoped>
+#container-kanban::-webkit-scrollbar {
+  display: none;
+}
 /* optional small tweaks */
 </style>

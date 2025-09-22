@@ -6,19 +6,19 @@
           <Settings />
         </div>
         <div class="sm:col-span-9 lg:col-span-10 px-2.5 md:px-5">
-          <h3 class="font-bold">Curriculum Vitae</h3>
+          <h3 class="font-bold">Cover Letter</h3>
           <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-            Upload and manage all your curriculum vitae here. You can select the
-            relevant curriculum vitae when applying for a job.
+            Upload and manage all your cover letter here. You can select the
+            relevant cover letter when applying for a job.
           </p>
           <div class="mt-4">
             <Form
-              @submit.prevent="handleUploadCv"
+              @submit="handleUploadCoverLetter"
               class="flex flex-col md:flex-row justify-center md:justify-between items-center"
             >
               <div class="mb-4">
                 <input
-                  id="cv-upload"
+                  id="coverletter-upload"
                   type="file"
                   @change="handleFileChange"
                   accept=".pdf,.doc,.docx"
@@ -38,39 +38,39 @@
 
             <hr class="my-4 border-gray-200 dark:border-gray-700" />
 
-            <h4 class="font-bold text-lg mb-4">Saved Curriculum Vitae</h4>
-            <div v-if="isLoadingCvs" class="text-center text-gray-500">
-              Loading CV's list...
+            <h4 class="font-bold text-lg mb-4">Saved Cover Letter</h4>
+            <div v-if="isLoadingCoverLetters" class="text-center text-gray-500">
+              Loading cover letters list...
             </div>
             <div
-              v-else-if="cvList.length === 0"
+              v-else-if="coverLetterList.length === 0"
               class="text-center text-gray-500 p-4 bg-black/5 dark:bg-white/10 rounded-lg"
             >
-              You have not uploaded your resume.
+              You have not uploaded your cover letter.
             </div>
             <ul v-else class="space-y-3">
               <li
-                v-for="cv in cvList"
-                :key="cv._id"
+                v-for="coverLetter in coverLetterList"
+                :key="coverLetter._id"
                 class="flex items-center justify-between p-3 bg-black/5 dark:bg-white/10 rounded-lg"
               >
                 <div class="flex items-center gap-2">
-                  <Icon icon="tdesign:file-1" />
+                  <Icon icon="tdesign:file" />
                   <span
                     class="text-sm font-medium text-gray-800 dark:text-gray-200"
-                    >{{ cv.filename }}</span
+                    >{{ coverLetter.filename }}</span
                   >
                 </div>
                 <div class="flex items-center space-x-3">
                   <a
-                    :href="cv.url"
+                    :href="coverLetter.url"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium cursor-pointer"
                     >Look</a
                   >
                   <button
-                    @click="handleDeleteCv(cv._id)"
+                    @click="handleDeleteCoverLetter(coverLetter._id)"
                     class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 text-sm font-medium cursor-pointer"
                   >
                     Delete
@@ -87,7 +87,7 @@
   <Dialog
     v-model:visible="dialogDelete"
     modal
-    header="Delete CV?"
+    header="Delete Cover Letter?"
     :style="{ width: '25rem' }"
   >
     <span class="text-gray-700 dark:text-gray-300"
@@ -109,13 +109,17 @@ import { ref, onMounted } from "vue";
 import DashboardLayout from "@/layouts/DashboardLayout.vue";
 import Settings from "@/components/menu/Settings.vue";
 import { useToast } from "primevue/usetoast";
-import { Form } from "@primevue/forms";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
+import { Form } from "@primevue/forms";
 import { Icon } from "@iconify/vue";
-import { uploadCv, getCvs, deleteCv } from "@/lib/storage";
+import {
+  uploadCoverLetter,
+  getCoverLetter,
+  deleteCoverLetter,
+} from "@/lib/storage";
 
-interface CV {
+interface CoverLetter {
   _id: string;
   url: string;
   filename: string;
@@ -129,22 +133,23 @@ const isLoading = ref(false);
 const message = ref("");
 const isError = ref(false);
 
-const cvList = ref<CV[]>([]);
-const isLoadingCvs = ref(true);
+const coverLetterList = ref<CoverLetter[]>([]);
+const isLoadingCoverLetters = ref(true);
 const dialogDelete = ref(false);
-const cvToDeleteId = ref<string | null>(null);
+const itemToDeleteId = ref<string | null>(null);
 
 onMounted(async () => {
   try {
-    isLoadingCvs.value = true;
-    const data = await getCvs();
-    cvList.value = data.cvs;
+    isLoadingCoverLetters.value = true;
+    const data = await getCoverLetter();
+    // @ts-ignore
+    coverLetterList.value = data.coverLetters;
   } catch (error) {
     console.error("Failed to fetch CVs:", error);
     message.value = "Gagal memuat daftar CV yang sudah ada.";
     isError.value = true;
   } finally {
-    isLoadingCvs.value = false;
+    isLoadingCoverLetters.value = false;
   }
 });
 
@@ -157,7 +162,7 @@ const handleFileChange = (event: Event) => {
   }
 };
 
-const handleUploadCv = async () => {
+const handleUploadCoverLetter = async () => {
   if (!selectedFile.value) {
     message.value = "Silakan pilih file terlebih dahulu.";
     isError.value = true;
@@ -169,8 +174,9 @@ const handleUploadCv = async () => {
   isError.value = false;
 
   try {
-    const response = await uploadCv(selectedFile.value); // Backend harus mengembalikan CV yang baru dibuat
-    cvList.value.push(response.cv);
+    const response = await uploadCoverLetter(selectedFile.value);
+    coverLetterList.value.push(response.coverLetter);
+    message.value = `File "${response.coverLetter.filename}" berhasil diunggah!`;
     toast.add({
       severity: "success",
       summary: "Success",
@@ -180,7 +186,10 @@ const handleUploadCv = async () => {
     isError.value = false;
     // Reset input file setelah berhasil unggah
     selectedFile.value = null;
-    const fileInput = document.getElementById("cv-upload") as HTMLInputElement;
+    // @ts-ignore
+    const fileInput = document.getElementById(
+      "coverletter-upload"
+    ) as HTMLInputElement;
     if (fileInput) {
       fileInput.value = "";
     }
@@ -195,31 +204,35 @@ const handleUploadCv = async () => {
   }
 };
 
-const handleDeleteCv = (cvId: string) => {
-  cvToDeleteId.value = cvId;
+const handleDeleteCoverLetter = (id: string) => {
+  itemToDeleteId.value = id;
   dialogDelete.value = true;
 };
 
 const confirmDelete = async () => {
-  if (!cvToDeleteId.value) return;
+  if (!itemToDeleteId.value) return;
 
-  dialogDelete.value = false; // Tutup dialog
+  dialogDelete.value = false;
   try {
-    await deleteCv(cvToDeleteId.value);
-    // Hapus CV dari list di frontend
-    cvList.value = cvList.value.filter((cv) => cv._id !== cvToDeleteId.value);
+    await deleteCoverLetter(itemToDeleteId.value);
+    coverLetterList.value = coverLetterList.value.filter(
+      (cl) => cl._id !== itemToDeleteId.value
+    );
     toast.add({
       severity: "success",
       summary: "Success",
-      detail: "CV berhasil dihapus.",
+      detail: "Cover letter deleted successfully.",
       life: 3000,
     });
-    isError.value = false; // Reset error state
-    cvToDeleteId.value = null; // Reset ID CV yang akan dihapus
+    itemToDeleteId.value = null;
   } catch (error: any) {
     console.error("Delete failed:", error);
-    message.value = error.response?.data?.message || "Gagal menghapus CV.";
-    isError.value = true;
+    toast.add({
+      severity: "error",
+      summary: "Error",
+      detail: error.response?.data?.message || "Failed to delete cover letter.",
+      life: 3000,
+    });
   }
 };
 </script>
