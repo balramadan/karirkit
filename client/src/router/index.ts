@@ -5,7 +5,7 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: "/kanban",
+      path: "/dashboard",
       name: "kanban",
       component: () => import("@/views/KanbanView.vue"),
       meta: {
@@ -14,7 +14,7 @@ const router = createRouter({
       },
     },
     {
-      path: "/signup",
+      path: "/register",
       name: "signup",
       component: () => import("@/views/RegisterView.vue"),
       meta: {
@@ -22,7 +22,7 @@ const router = createRouter({
       },
     },
     {
-      path: "/signin",
+      path: "/login",
       name: "signin",
       component: () => import("@/views/LoginView.vue"),
       meta: {

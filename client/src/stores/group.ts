@@ -17,6 +17,10 @@ export const useGroupStore = defineStore(
       activeGroup.value = id;
     }
 
+    function clearGroup() {
+      activeGroup.value = null
+    }
+
     async function getGroups() {
       try {
         const { data } = await api.get("/v1/group");
@@ -27,7 +31,7 @@ export const useGroupStore = defineStore(
       }
     }
 
-    return { groups, activeGroup, setGroup, getGroups};
+    return { groups, activeGroup, setGroup, clearGroup, getGroups};
   },
   {
     persist: {

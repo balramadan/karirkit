@@ -3,7 +3,9 @@
     class="flex flex-col gap-4 bg-white dark:bg-transparent py-5 px-5 mt-4 shadow rounded-xl h-[83vh] max-h-[83vh]"
   >
     <div class="flex items-center justify-between">
-      <h2 class="text-xl font-semibold text-black dark:text-white">Job Application</h2>
+      <h2 class="text-xl font-semibold text-black dark:text-white">
+        Job Application
+      </h2>
       <div class="flex items-center gap-2">
         <button
           class="rounded-md bg-blue-600 px-3 py-2 text-white cursor-pointer transition-all duration-300 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 disabled:opacity-60"
@@ -22,7 +24,10 @@
       </div>
     </div>
 
-    <div id="container-kanban" class="flex overflow-x-scroll overflow-auto h-full gap-4">
+    <div
+      id="container-kanban"
+      class="flex overflow-x-scroll overflow-auto h-full gap-4"
+    >
       <div
         v-for="s in statuses"
         :key="s"
@@ -172,28 +177,16 @@
           rows="4"
         ></textarea>
 
+        <div class="flex justify-between items-center gap-2">
+          <CV @change="cvOnChange" />
+        </div>
+
         <textarea
           v-model="addForm.notes"
           class="w-full rounded border border-black/10 px-2 py-2 text-sm text-black dark:text-white dark:border-white/10 dark:bg-transparent"
           placeholder="Notes"
           rows="2"
         ></textarea>
-
-        <div class="flex justify-between items-center gap-2">
-          <label class="w-20 text-xs text-black/70 dark:text-white/70"
-            >CV / Resume</label
-          >
-          <FileUpload
-            class="!bg-blue-700 !border-none !px-2 !text-xs"
-            mode="basic"
-            name="demo[]"
-            url="/api/upload"
-            accept=".doc,.docx,.pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/pdf"
-            :maxFileSize="1000000"
-            :auto="true"
-            chooseLabel="Browse"
-          />
-        </div>
 
         <div class="flex gap-2 pt-1">
           <button
@@ -287,6 +280,10 @@
           rows="4"
         ></textarea>
 
+        <div class="flex justify-between items-center gap-2">
+          <CV :default="editForm.cvVersion" @change="cvOnChange" />
+        </div>
+
         <textarea
           v-model="editForm.notes"
           class="w-full rounded border border-black/10 px-2 py-2 text-sm text-black dark:text-white dark:border-white/10 dark:bg-transparent"
@@ -322,14 +319,9 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, onMounted } from "vue";
-import draggable from "vuedraggable";
+import { reactive, ref, onMounted, watch } from "vue";
 import { Icon } from "@iconify/vue";
 import type { Application, Status } from "@/types/application";
-import Dialog from "primevue/dialog";
-import Button from "primevue/button";
-import DatePicker from "primevue/datepicker";
-import FileUpload from "primevue/fileupload";
 import {
   listByStatus,
   createApplication,
@@ -338,6 +330,13 @@ import {
   updateApplication,
 } from "@/composables/application";
 import { scrapeJob } from "@/composables/scrapeJob";
+import { useGroupStore } from "@/stores/group";
+import { storeToRefs } from "pinia";
+import draggable from "vuedraggable";
+import Dialog from "primevue/dialog";
+import Button from "primevue/button";
+import DatePicker from "primevue/datepicker";
+import CV from "@/components/select/CV.vue";
 
 const statuses = [
   "backlog",
@@ -365,6 +364,9 @@ const columns = reactive<Record<Status, Application[]>>({
   rejected: [],
 });
 
+const groupStore = useGroupStore();
+const { activeGroup } = storeToRefs(groupStore);
+
 const loading = ref(false);
 const fetchLoading = ref(false);
 const creating = ref(false);
@@ -381,6 +383,7 @@ const addForm = reactive({
   notes: "",
   jobDescription: "",
   appliedAt: null as Date | null,
+  cvVersion: "",
 });
 
 // Dialog Edit
@@ -395,6 +398,7 @@ const editForm = reactive({
   jobDescription: "",
   status: "backlog" as Status,
   appliedAt: null as Date | null,
+  cvVersion: "",
 });
 
 function openAddDialog() {
@@ -412,6 +416,7 @@ function closeAddDialog() {
   addForm.notes = "";
   addForm.jobDescription = "";
   addForm.appliedAt = null;
+  addForm.cvVersion = "";
 }
 
 function openEditDialog(item: Application) {
@@ -424,8 +429,9 @@ function openEditDialog(item: Application) {
   editForm.jobUrl = item.jobUrl || "";
   editForm.status = item.status;
   editForm.notes = item.notes || "";
-  editForm.jobDescription = (item as any).jobDescription || "";
+  editForm.jobDescription = item.jobDescription || "";
   editForm.appliedAt = item.appliedAt ? new Date(item.appliedAt) : null;
+  editForm.cvVersion = item.cvVersion || ""
   editDialogVisible.value = true;
 }
 
@@ -439,7 +445,7 @@ async function refresh() {
   error.value = null;
   try {
     const results = await Promise.all(
-      statuses.map((s) => listByStatus(s, 1000, "position"))
+      statuses.map((s) => listByStatus(s, 1000, "position", activeGroup.value))
     );
     statuses.forEach((s, idx) => {
       columns[s].splice(0, columns[s].length, ...results[idx]);
@@ -482,6 +488,8 @@ async function onCreate() {
       jobDescription: addForm.jobDescription || undefined,
       position: columns[s].length,
       appliedAt: addForm.appliedAt || undefined,
+      groupId: activeGroup.value || undefined,
+      cvVersion: addForm.cvVersion || null
     } as any);
     columns[s].push(doc);
     closeAddDialog();
@@ -560,7 +568,16 @@ async function onDelete(id: string, s: Status) {
   }
 }
 
+const cvOnChange = (url: string) => {
+  addForm.cvVersion = url;
+};
+
 onMounted(refresh);
+
+// Pantau perubahan pada activeGroup dan panggil refresh
+watch(activeGroup, () => {
+  refresh();
+});
 </script>
 
 <style scoped>

@@ -6,7 +6,7 @@
       <h3 class="font-bold text-2xl">Sign up for free</h3>
       <p class="text-sm text-black/60">
         Already have an account?
-        <RouterLink to="/signin" class="text-blue-700">Sign in here</RouterLink>
+        <RouterLink to="/login" class="text-blue-700">Sign in here</RouterLink>
       </p>
       <Form
         v-slot="$form"
@@ -15,7 +15,10 @@
         :resolver="resolver"
       >
         <div class="flex flex-col gap-2">
-          <label for="name" class="text-sm">Name</label>
+          <div class="flex flex-row gap-2">
+            <label for="name" class="text-sm">Name</label>
+            <span class="text-red-500 text-sm">*</span>
+          </div>
           <InputText
             name="name"
             type="text"
@@ -31,7 +34,10 @@
           >
         </div>
         <div class="flex flex-col gap-2 mt-5">
-          <label for="email" class="text-sm">Email</label>
+          <div class="flex flex-row gap-2">
+            <label for="email" class="text-sm">Email</label>
+            <span class="text-red-500 text-sm">*</span>
+          </div>
           <InputText
             name="email"
             type="email"
@@ -47,7 +53,10 @@
           >
         </div>
         <div class="flex flex-col gap-2 mt-5">
-          <label for="password" class="text-sm">Password</label>
+          <div class="flex flex-row gap-2">
+            <label for="password" class="text-sm">Password</label>
+            <span class="text-red-500 text-sm">*</span>
+          </div>
           <Password
             name="password"
             inputClass="!w-full !text-sm focus:!border-blue-700"
@@ -64,7 +73,12 @@
           >
         </div>
         <div class="flex flex-col gap-2 mt-5">
-          <label for="confirmPassword" class="text-sm">Confirm Password</label>
+          <div class="flex flex-row gap-2">
+            <label for="confirmPassword" class="text-sm"
+              >Confirm Password</label
+            >
+            <span class="text-red-500 text-sm">*</span>
+          </div>
           <Password
             name="confirmPassword"
             inputClass="!w-full !text-sm focus:!border-blue-700"
@@ -206,7 +220,7 @@ const submitSignUp = async (e: any) => {
       life: 3000,
     });
 
-    router.push('/signin')
+    router.push("/login");
   } catch (err: any) {
     toast.add({
       severity: "error",

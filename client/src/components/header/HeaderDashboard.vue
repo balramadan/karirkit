@@ -14,28 +14,32 @@
       class="flex flex-1 items-center justify-center md:items-stretch md:justify-start"
     >
       <Image
-        class="h-8 w-auto light:block dark:hidden"
+        class="h-8 w-auto cursor-pointer light:block dark:hidden"
         height="32"
         width="32"
         src="/KarirKit-light.png"
         alt="Your Company"
+        @click="toDashboard"
       />
       <Image
-        class="h-8 w-auto light:hidden dark:block"
+        class="h-8 w-auto cursor-pointer light:hidden dark:block"
         height="32"
         width="32"
         src="/KarirKit-dark.png"
         alt="Your Company"
+        @click="toDashboard"
       />
       <div class="hidden md:ml-6 md:block">
         <Select
           v-model="selectedGroup"
+          @change="changeGroup"
           :options="groups"
           option-label="name"
           option-value="_id"
           placeholder="Select Group"
           size="small"
           class="!border-blue-500"
+          showClear
           :pt="{
             label: {
               class: '!text-blue-500',
@@ -67,7 +71,6 @@
             </div>
           </template>
         </Select>
-        {{ selectedGroup }}
       </div>
     </div>
     <div
@@ -152,12 +155,14 @@
               class="w-auto light:block dark:hidden"
               width="24"
               alt="Logo"
+              @click="toDashboard"
             />
             <Image
               src="/KarirKit-dark.png"
               class="w-auto light:hidden dark:block"
               width="24"
               alt="Logo"
+              @click="toDashboard"
             />
             <span class="font-semibold text-xl text-primary">KarirKit</span>
           </span>
@@ -207,6 +212,7 @@ import Avatar from "primevue/avatar";
 import Menu from "primevue/menu";
 import InputText from "primevue/inputtext";
 import SwitchMode from "@/components/SwitchMode.vue";
+import router from "@/router";
 
 const menu = ref();
 const selectedGroup = ref();
@@ -234,11 +240,22 @@ const toggle = (event: any) => {
 
 onMounted(async () => {
   await getGroups();
+  if (groupStore.activeGroup) {
+    selectedGroup.value = groupStore.activeGroup;
+  }
 });
 
 const getGroups = async () => {
   await groupStore.getGroups();
   groups.value = groupStore.groups;
+};
+
+const changeGroup = () => {
+  if (!selectedGroup.value) {
+    return groupStore.clearGroup();
+  }
+  groupStore.setGroup(selectedGroup.value);
+  console.log("Group change");
 };
 
 const addGroup = async (e: any) => {
@@ -275,6 +292,10 @@ const addGroup = async (e: any) => {
   } catch (err) {
     console.error(err);
   }
+};
+
+const toDashboard = () => {
+  router.push("/dashboard");
 };
 </script>
 <style scoped></style>

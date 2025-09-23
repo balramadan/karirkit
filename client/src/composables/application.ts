@@ -10,28 +10,46 @@ type ListResponse = {
 };
 
 /**
- * The function `listByStatus` retrieves a list of items based on a specified status, with optional
- * parameters for limit and sorting.
- * @param {Status} status - Status of the applications to list. It is a required parameter for
- * filtering the applications based on their status.
+ * This TypeScript function lists applications by status, with optional parameters for limit, sort, and
+ * group ID.
+ * @param {Status} status - The `status` parameter is used to filter the list of items based on their
+ * status. It is required for the function to work properly.
  * @param [limit=1000] - The `limit` parameter in the `listByStatus` function specifies the maximum
- * number of items to be returned in the list. By default, it is set to 1000 if no value is provided
- * when calling the function.
+ * number of items to be returned in the list. If not specified, the default limit is set to 1000.
  * @param [sort=position] - The `sort` parameter in the `listByStatus` function is used to specify the
- * sorting criteria for the list of items retrieved from the API. In this case, the default sorting
- * criteria is set to "position". This means that the items will be sorted based on their position in
- * the list by
- * @returns The function `listByStatus` is returning a list of items with the specified status, limited
- * by the provided limit, and sorted based on the specified criteria.
+ * sorting criteria for the list of applications. By default, it is set to "position", which means the
+ * applications will be sorted based on their position. You can change this parameter to specify a
+ * different sorting criteria if
+ * @param {string | null} groupId - The `groupId` parameter in the `listByStatus` function is a string
+ * or null value that represents the group ID. If a `groupId` is provided (not null), it will be added
+ * to the query parameters for filtering the list of applications by group. If `groupId` is null,
+ * @returns The function `listByStatus` returns an array of `Application` items fetched from the API
+ * based on the provided `status`, `limit`, `sort`, and `groupId` parameters.
  */
 export async function listByStatus(
   status: Status,
   limit = 1000,
-  sort = "position"
+  sort = "position",
+  groupId: string | null
 ) {
-  const { data } = await api.get<ListResponse>("/v1/application", {
-    params: { status, limit, sort },
-  });
+  const params = new URLSearchParams();
+  params.append("status", status);
+  params.append("limit", String(limit));
+  params.append("sort", sort);
+
+  // Logika untuk menambahkan groupId ke query
+  if (groupId) {
+    // Jika ada groupId (string), tambahkan ke parameter.
+    params.append("groupId", groupId);
+  } else if (groupId === null) {
+    // Jika groupId adalah null (artinya grup dibersihkan dari header),
+    // kirim 'none' untuk mendapatkan data yang tidak terkelompok.
+    params.append("groupId", "none");
+  }
+
+  const { data } = await api.get<{ items: Application[] }>(
+    `/v1/application?${params.toString()}`
+  );
   return data.items;
 }
 

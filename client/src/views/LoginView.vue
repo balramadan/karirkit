@@ -6,7 +6,7 @@
       <h3 class="font-bold text-2xl">Sign in to your account</h3>
       <p class="text-sm text-black/60 dark:text-white/60">
         Not a member?
-        <RouterLink to="/signup" class="text-blue-700"
+        <RouterLink to="/register" class="text-blue-700"
           >Free to sign up here</RouterLink
         >
       </p>
@@ -18,7 +18,10 @@
         @submit="submitSignIn"
       >
         <div class="flex flex-col gap-2">
-          <label for="email" class="text-sm">Email</label>
+          <div class="flex flex-row gap-2">
+            <label for="email" class="text-sm">Email</label>
+            <span class="text-red-500 text-sm">*</span>
+          </div>
           <InputText
             name="email"
             type="email"
@@ -34,7 +37,10 @@
           >
         </div>
         <div class="flex flex-col gap-2 mt-5">
-          <label for="password" class="text-sm">Password</label>
+          <div class="flex flex-row gap-2">
+            <label for="password" class="text-sm">Password</label>
+            <span class="text-red-500 text-sm">*</span>
+          </div>
           <Password
             name="password"
             inputClass="!w-full !text-sm focus:!border-blue-700"
@@ -157,7 +163,7 @@ const submitSignIn = async (e: any) => {
     });
 
     authStore.setUser(data.id, data.token);
-    router.push("/kanban");
+    router.push("/dashboard");
   } catch (err: any) {
     toast.add({
       severity: "error",

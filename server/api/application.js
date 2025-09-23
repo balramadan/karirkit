@@ -17,16 +17,38 @@ appRouter.get(
         page = "1",
         limit = "20",
         sort = "-createdAt", // mis: "status position" atau "-appliedAt"
-        userId,
+        groupId, // Tambahkan groupId untuk filtering
       } = req.query;
 
-      const filter = {};
+      // PERBAIKAN KEAMANAN: Selalu filter berdasarkan user yang sedang login dari token JWT.
+      const filter = { user: req.user.id };
+
       if (q) filter.$text = { $search: q };
       if (status) {
         filter.status = { $in: String(status).split(",") };
       }
-      if (userId) filter.user = req.user.id;
 
+      // Logika filtering berdasarkan groupId
+      if (groupId) {
+        if (groupId === "none") {
+          // Jika groupId adalah 'none', cari aplikasi yang TIDAK ada di grup manapun.
+          // 1. Ambil semua ID aplikasi yang ada di dalam semua grup milik user.
+          const userGroups = await Groups.find({ user: req.user.id }).select("applications").lean();
+          const appIdsInGroups = userGroups.reduce((acc, group) => {
+            if (group.applications) {
+              acc.push(...Object.keys(group.applications));
+            }
+            return acc;
+          }, []);
+          // 2. Filter aplikasi dengan _id yang tidak ada ($nin) di dalam daftar tersebut.
+          filter._id = { $nin: appIdsInGroups };
+        } else {
+          // Jika groupId spesifik diberikan, cari aplikasi yang ada DI DALAM grup itu.
+          const group = await Groups.findOne({ _id: groupId, user: req.user.id }).lean();
+          const appIds = group && group.applications ? Object.keys(group.applications) : [];
+          filter._id = { $in: appIds };
+        }
+      }
       const pageNum = Math.max(parseInt(String(page), 10) || 1, 1);
       const limitNum = Math.min(
         Math.max(parseInt(String(limit), 10) || 20, 1),

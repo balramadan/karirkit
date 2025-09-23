@@ -46,7 +46,7 @@ api.interceptors.response.use((response) => response, (error) => {
     authStore.clearUser();
 
     // Arahkan ke halaman login
-    router.push('/signin');
+    router.push('/login');
   }
 
   return Promise.reject(error);
