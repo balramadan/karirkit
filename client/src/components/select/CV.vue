@@ -9,15 +9,15 @@
       optionValue="url"
       placeholder="Select CV"
       size="small"
-      class="!border-blue-500 !w-full"
+      class="!border-blue-600/20 dark:!border-white/20 !w-full !bg-transparent"
       showClear
       :defaultValue="props.default"
       :pt="{
         label: {
-          class: '!text-blue-500',
+          class: '!text-blue-600 dark:!text-white',
         },
         option: {
-          class: 'aria-selected:!bg-blue-500/20 hover:!bg-blue-500/10',
+          class: 'aria-selected:!bg-blue-600/20 hover:!bg-blue-600/10',
         },
       }"
     >

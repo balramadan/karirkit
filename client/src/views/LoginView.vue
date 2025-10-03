@@ -85,14 +85,14 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { Form } from "@primevue/forms";
+import { Icon } from "@iconify/vue";
+import { useToast } from "primevue/usetoast";
+import { useAuthStore } from "@/stores/auth";
 import InputText from "primevue/inputtext";
 import Password from "primevue/password";
 import Message from "primevue/message";
 import Button from "primevue/button";
 import Image from "primevue/image";
-import { Icon } from "@iconify/vue";
-import { useToast } from "primevue/usetoast";
-import { useAuthStore } from "@/stores/auth";
 import router from "@/router";
 
 const toast = useToast();
@@ -162,7 +162,7 @@ const submitSignIn = async (e: any) => {
       life: 3000,
     });
 
-    authStore.setUser(data.id, data.token);
+    authStore.setUser(data.id, data.token, data.name, data.photoUrl);
     router.push("/dashboard");
   } catch (err: any) {
     toast.add({

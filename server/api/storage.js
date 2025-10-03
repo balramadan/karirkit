@@ -139,14 +139,17 @@ storageRouter.post(
       user.coverLetters.push(newCoverLetter);
       await user.save();
 
-      const createdCoverLetter = user.coverLetters[user.coverLetters.length - 1];
+      const createdCoverLetter =
+        user.coverLetters[user.coverLetters.length - 1];
       res.status(201).json({
         message: "Cover letter uploaded successfully",
         coverLetter: createdCoverLetter,
       });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Server error while saving cover letter." });
+      res
+        .status(500)
+        .json({ message: "Server error while saving cover letter." });
     }
   }
 );
@@ -168,7 +171,9 @@ storageRouter.get(
       res.status(200).json({ coverLetters: sortedCoverLetter });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Server error while fetching Cover Letters." });
+      res
+        .status(500)
+        .json({ message: "Server error while fetching Cover Letters." });
     }
   }
 );
@@ -202,7 +207,57 @@ storageRouter.delete(
       res.status(200).json({ message: "Cover letter deleted successfully." });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Server error while deleting Cover Letter." });
+      res
+        .status(500)
+        .json({ message: "Server error while deleting Cover Letter." });
+    }
+  }
+);
+
+storageRouter.post(
+  "/avatar",
+  passport.authenticate("jwt", { session: false }),
+  upload.single("file"),
+  handleUpload("avatar_uploads"),
+  async (req, res) => {
+    try {
+      // req.user contains the user object from the JWT strategy.
+      // We'll fetch the full Mongoose document to ensure we can save it.
+      const user = await Users.findById(req.user.id);
+      if (!user) {
+        return res.status(404).json({ message: "User not found." });
+      }
+
+      // 1. Hapus avatar lama dari Cloudinary jika ada
+      if (user.photoUrl) {
+        try {
+          const urlParts = user.photoUrl.split("/");
+          const publicIdWithExtension = urlParts.slice(-2).join("/");
+          const public_id = publicIdWithExtension.substring(0, publicIdWithExtension.lastIndexOf("."));
+
+          await cloudinary.uploader.destroy(public_id, {
+            resource_type: "image",
+          });
+          console.log(`Successfully deleted old avatar: ${public_id}`);
+        } catch (deleteError) {
+          // Jangan hentikan proses jika gagal menghapus file lama, cukup catat log
+          console.error("Failed to delete old avatar from Cloudinary:", deleteError);
+        }
+      }
+
+      // 2. Update URL foto profil pengguna dengan URL baru dari Cloudinary
+      user.photoUrl = req.cloudinary.secure_url;
+      await user.save();
+
+      res.status(200).json({
+        message: "Profile picture updated successfully.",
+        photoUrl: user.photoUrl,
+      });
+    } catch (error) {
+      console.error("Error updating profile picture", error);
+      res
+        .status(500)
+        .json({ message: "Server error while updating profile picture." });
     }
   }
 );

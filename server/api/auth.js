@@ -47,7 +47,13 @@ authRouter.post("/signin", (req, res, next) => {
         expiresIn: "1d",
       });
 
-      return res.json({ success: true, user_id: user._id, token: `${token}` });
+      return res.json({
+        success: true,
+        user_id: user._id,
+        name: user.name,
+        photoUrl: user.photoUrl,
+        token: `${token}`,
+      });
     });
   })(req, res, next);
 });

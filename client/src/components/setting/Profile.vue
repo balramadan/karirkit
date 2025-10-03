@@ -1,5 +1,5 @@
 <template>
-  <div v-if="props.data" class="px-2.5 md:px-5">
+  <div v-if="props.data" class="pl-2.5 md:pl-5">
     <div class="grid lg:grid-cols-12 gap-10">
       <div class="lg:col-span-10 flex flex-col gap-2">
         <h3 class="font-semibold text-xl">Profile</h3>
@@ -34,25 +34,44 @@
             <div class="text-right">
               <Button
                 class="w-40 !text-sm !bg-blue-700 !border-none !transition-all !duration-300 !ease-in-out hover:!bg-blue-900 dark:!text-white"
-                label="Save Profile"
+                :label="isLoading ? 'Saving...' : 'Save Profile'"
                 type="submit"
+                :disabled="isLoading"
               />
             </div>
           </Form>
         </div>
       </div>
       <div
-        class="hidden lg:flex lg:flex-col lg:col-span-2 justify-start items-baseline gap-2"
+        class="lg:col-span-2 flex flex-col items-center lg:items-start gap-2"
       >
-        <p class="text-sm text-left">Avatar</p>
-        <Avatar :label="getInials()" size="xlarge" />
+        <p class="text-sm text-left w-full">Avatar</p>
+        <Avatar
+          v-if="avatarPreviewUrl || props.data.data.photoUrl"
+          :image="avatarPreviewUrl || props.data.data.photoUrl"
+          size="xlarge"
+          shape="circle"
+          class=""
+          :pt="{ image: { class: 'object-cover w-full h-full' } }"
+        />
+        <Avatar
+          v-else
+          :label="initial"
+          size="xlarge"
+          shape="circle"
+          class=""
+          :pt="{ image: { class: 'object-cover w-full h-full' } }"
+        />
         <FileUpload
           class="!text-sm !bg-blue-700 !border-none !transition-all !duration-300 !ease-in-out hover:!bg-blue-900 dark:!text-white"
           mode="basic"
           name="avatar[]"
           accept="image/*"
           :maxFileSize="1000000"
-          chooseLabel="Upload"
+          chooseLabel="Change"
+          @select="onFileSelect"
+          :auto="true"
+          :customUpload="true"
         >
           <template #chooseicon>
             <Icon icon="tdesign:upload" />
@@ -63,16 +82,18 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
-import { api } from "@/lib/axios";
+import { ref, onUnmounted } from "vue";
 import { Form } from "@primevue/forms";
 import { Icon } from "@iconify/vue";
+import { useToast } from "primevue/usetoast";
+import { uploadAvatar } from "@/lib/storage";
+import { api } from "@/lib/axios";
+import { getInitials } from "@/composables/text"
+import type { FileUploadSelectEvent } from "primevue/fileupload";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import Avatar from "primevue/avatar";
 import FileUpload from "primevue/fileupload";
-import { useToast } from "primevue/usetoast";
-import router from "@/router";
 
 const toast = useToast();
 
@@ -83,41 +104,63 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits(['profileUpdated']);
+
 const name = ref(props.data.data?.name);
 const email = ref(props.data.data?.email);
-const password = ref("");
+const selectedAvatarFile = ref<File | null>(null);
+const avatarPreviewUrl = ref<string | null>(null);
+const isLoading = ref(false);
 
-const getInials = () => {
-  const nameParts = name.value.split(" ");
-  let initials = "";
-  for (let i = 0; i < nameParts.length; i++) {
-    initials += nameParts[i].charAt(0);
+const initial = getInitials(name.value)
+
+const onFileSelect = (event: FileUploadSelectEvent) => {
+  const file = event.files[0];
+  if (file) {
+    selectedAvatarFile.value = file;
+    avatarPreviewUrl.value = URL.createObjectURL(file);
   }
-  return initials.toUpperCase();
-}
+};
+
+// Clean up the object URL to prevent memory leaks
+onUnmounted(() => {
+  if (avatarPreviewUrl.value) {
+    URL.revokeObjectURL(avatarPreviewUrl.value);
+  }
+});
 
 const changeProfile = async () => {
-  const data = await api.patch("/v1/user", { name: name.value, email: email.value });
-  if (data.status === 500) {
-    toast.add({
-      summary: "Failed",
-      detail: data.data?.message,
-      severity: "error",
-      life: 3000,
-    });
-  }
+  isLoading.value = true;
+  try {
+    if (selectedAvatarFile.value) {
+      await uploadAvatar(selectedAvatarFile.value);
+    }
 
-  if (data.status === 200) {
+    const data = await api.patch("/v1/user", {
+      name: name.value,
+      email: email.value,
+    });
+
     toast.add({
-      summary: "Change Profile Success",
-      detail: data.data?.message,
+      summary: "Success",
+      detail: "Profile updated successfully!",
       severity: "success",
       life: 3000,
     });
 
-    router.push("/settings#profile");
-    router.go(0);
+    // Beri tahu parent component untuk memuat ulang data
+    emit('profileUpdated');
+  } catch (error: any) {
+    console.error("Failed to update profile:", error);
+    toast.add({
+      summary: "Error",
+      detail: error.response?.data?.message || "Failed to update profile.",
+      severity: "error",
+      life: 3000,
+    });
+  } finally {
+    isLoading.value = false;
   }
-}
+};
 </script>
 <style></style>

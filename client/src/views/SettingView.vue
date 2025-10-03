@@ -1,14 +1,18 @@
 <template>
   <DashboardLayout>
     <template #default>
-      <div class="grid grid-cols-1 md:grid-cols-12 gap-4 my-5">
-        <div class="sm:col-span-3 lg:col-span-2">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-5 my-5">
+        <div class="md:col-span-3 lg:col-span-2">
           <Settings />
         </div>
-        <div class="sm:col-span-9 lg:col-span-10">
+        <div v-if="isLoading" class="md:col-span-9 lg:col-span-10">
+          <Skeleton width="w-full" height="20rem" class="ml-5" />
+        </div>
+        <div v-else class="md:col-span-9 lg:col-span-10">
           <Profile
             v-if="activeTab === 'profile' && userData"
             :data="userData"
+            @profile-updated="fetchUserData"
           />
           <Appearance v-if="activeTab === 'appearance'" />
         </div>
@@ -20,19 +24,32 @@
 import { ref, onMounted, computed, watch } from "vue";
 import { useRoute } from "vue-router";
 import { api } from "@/lib/axios";
+import Skeleton from 'primevue/skeleton';
 import DashboardLayout from "@/layouts/DashboardLayout.vue";
 import Settings from "@/components/menu/Settings.vue";
 import Profile from "@/components/setting/Profile.vue";
 import Appearance from "@/components/setting/Appearance.vue";
 
+const isLoading = ref(false);
 const userData = ref();
-const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const route = useRoute();
 
 const activeTab = computed(() => {
   return route.hash.replace("#", "");
 });
+
+const fetchUserData = async () => {
+  try {
+    isLoading.value = true;
+    const response = await api.get("/v1/user");
+    userData.value = response.data;
+  } catch (error) {
+    console.error("Failed to fetch data user:", error);
+  } finally {
+    isLoading.value = false;
+  }
+};
 
 watch(
   () => route.hash,
@@ -41,10 +58,6 @@ watch(
   }
 );
 
-onMounted(async () => {
-  const response = await api.get(`${API_URL}/v1/user`);
-
-  userData.value = response.data;
-});
+onMounted(fetchUserData);
 </script>
 <style lang=""></style>

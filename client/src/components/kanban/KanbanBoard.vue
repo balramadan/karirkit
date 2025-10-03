@@ -1,14 +1,12 @@
 <template>
-  <div
-    class="flex flex-col gap-4 bg-white dark:bg-transparent py-5 px-5 mt-4 shadow rounded-xl h-[83vh] max-h-[83vh]"
-  >
+  <div class="flex flex-col gap-4 py-5 rounded-xl h-[76vh] max-h-full">
     <div class="flex items-center justify-between">
-      <h2 class="text-xl font-semibold text-black dark:text-white">
+      <h2 class="text-lg font-semibold text-black dark:text-white">
         Job Application
       </h2>
       <div class="flex items-center gap-2">
         <button
-          class="rounded-md bg-blue-600 px-3 py-2 text-white cursor-pointer transition-all duration-300 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 disabled:opacity-60"
+          class="rounded-md bg-blue-600 px-3 py-2 text-white cursor-pointer transition-all duration-300 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 disabled:opacity-60"
           @click="openAddDialog"
           :disabled="creating"
           title="Add"
@@ -24,7 +22,11 @@
       </div>
     </div>
 
+    <div v-if="loading" class="flex flex-row gap-4 w-full h-1/2">
+      <Skeleton v-for="i in 5" class="!w-64 !h-full" />
+    </div>
     <div
+      v-else
       id="container-kanban"
       class="flex overflow-x-scroll overflow-auto h-full gap-4"
     >
@@ -332,6 +334,7 @@ import {
 import { scrapeJob } from "@/composables/scrapeJob";
 import { useGroupStore } from "@/stores/group";
 import { storeToRefs } from "pinia";
+import Skeleton from "primevue/skeleton";
 import draggable from "vuedraggable";
 import Dialog from "primevue/dialog";
 import Button from "primevue/button";
@@ -431,7 +434,7 @@ function openEditDialog(item: Application) {
   editForm.notes = item.notes || "";
   editForm.jobDescription = item.jobDescription || "";
   editForm.appliedAt = item.appliedAt ? new Date(item.appliedAt) : null;
-  editForm.cvVersion = item.cvVersion || ""
+  editForm.cvVersion = item.cvVersion || "";
   editDialogVisible.value = true;
 }
 
@@ -489,7 +492,7 @@ async function onCreate() {
       position: columns[s].length,
       appliedAt: addForm.appliedAt || undefined,
       groupId: activeGroup.value || undefined,
-      cvVersion: addForm.cvVersion || null
+      cvVersion: addForm.cvVersion || null,
     } as any);
     columns[s].push(doc);
     closeAddDialog();

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex items-center justify-between py-5 px-5 sm:px-6 lg:px-20 shadow-sm"
+    class="flex items-center justify-between py-2.5 px-5 sm:px-6 lg:px-20 xl:px-40 shadow-sm"
   >
     <div class="relative flex md:hidden items-center justify-between">
       <Icon
@@ -29,8 +29,10 @@
         alt="Your Company"
         @click="toDashboard"
       />
-      <div class="hidden md:ml-6 md:block">
+      <div class="hidden md:ml-6 md:block gap-5">
+        <Skeleton v-if="isGroupLoading" class="!w-36 !h-full" shape="square" />
         <Select
+          v-else
           v-model="selectedGroup"
           @change="changeGroup"
           :options="groups"
@@ -38,14 +40,14 @@
           option-value="_id"
           placeholder="Select Group"
           size="small"
-          class="!border-blue-500"
+          class="!border-blue-600 dark:!border-white"
           showClear
           :pt="{
             label: {
-              class: '!text-blue-500',
+              class: '!text-blue-500 dark:!text-white',
             },
             option: {
-              class: 'aria-selected:!bg-blue-500/20 hover:!bg-blue-500/10',
+              class: 'aria-selected:!bg-blue-600/20 hover:!bg-blue-600/10',
             },
           }"
         >
@@ -78,26 +80,23 @@
     >
       <SwitchMode class="hidden sm:block" />
 
-      <button
-        type="button"
-        class="hidden sm:block relative rounded-full p-1 text-gray-400 focus:outline-2 focus:outline-offset-2 focus:outline-indigo-500 dark:hover:text-white"
+      <div
+        class="flex flex-row gap-2 items-center px-2.5 py-2.5 cursor-pointer rounded-full group hover:bg-blue-600/5 hover:bg-white/5 transition-all duration-300 ease-in-out"
+        @click="toggle"
       >
-        <span class="absolute -inset-1.5" />
-        <span class="sr-only">View notifications</span>
-        <Icon
-          icon="tdesign:notification-filled"
-          class="size-6 md:size-4"
-          aria-hidden="true"
-        />
-      </button>
-
-      <div class="">
         <Avatar
-          label="P"
-          class="!size-9 !cursor-pointer"
+          v-if="props.dataUser?.photoUrl"
+          :image="props.dataUser?.photoUrl"
+          class="!size-9"
           shape="circle"
-          @click="toggle"
         />
+        <Avatar
+          v-else
+          :label="initial"
+          class="!size-9"
+          shape="circle"
+        />
+        <p>{{ props.dataUser?.name }}</p>
         <Menu ref="menu" id="overlay_menu" :model="items" :popup="true">
           <template #item="{ item, props }">
             <RouterLink
@@ -139,7 +138,7 @@
       </div>
       <Button
         type="submit"
-        class="mt-5 !text-sm w-full !bg-blue-700 !border-none !transition-all !duration-300 !ease-in-out dark:!text-white hover:!bg-blue-900"
+        class="mt-5 !text-sm w-full !bg-blue-600 !border-none !transition-all !duration-300 !ease-in-out dark:!text-white dark:!bg-blue-700 hover:!bg-blue-700 dark:hover:!bg-blue-800"
         label="Add"
       />
     </Form>
@@ -203,6 +202,8 @@ import { api } from "@/lib/axios";
 import { Form } from "@primevue/forms";
 import { useToast } from "primevue/usetoast";
 import { useGroupStore } from "@/stores/group";
+import { getInitials } from "@/composables/text"
+import Skeleton from "primevue/skeleton";
 import Image from "primevue/image";
 import Select from "primevue/select";
 import Dialog from "primevue/dialog";
@@ -213,6 +214,15 @@ import Menu from "primevue/menu";
 import InputText from "primevue/inputtext";
 import SwitchMode from "@/components/SwitchMode.vue";
 import router from "@/router";
+
+const props = defineProps({
+  dataUser: {
+    type: Object,
+  },
+});
+
+const isGroupLoading = ref(true);
+const isProfileLoading = ref(false);
 
 const menu = ref();
 const selectedGroup = ref();
@@ -237,17 +247,19 @@ const drawer = ref(false);
 const toggle = (event: any) => {
   menu.value.toggle(event);
 };
-
-onMounted(async () => {
-  await getGroups();
-  if (groupStore.activeGroup) {
-    selectedGroup.value = groupStore.activeGroup;
-  }
-});
+const initial = getInitials(props.dataUser?.name)
 
 const getGroups = async () => {
-  await groupStore.getGroups();
-  groups.value = groupStore.groups;
+  try {
+    isGroupLoading.value = true;
+
+    await groupStore.getGroups();
+    groups.value = groupStore.groups;
+  } catch (error) {
+    console.error("Failed to get data group:", error);
+  } finally {
+    isGroupLoading.value = false;
+  }
 };
 
 const changeGroup = () => {
@@ -297,5 +309,12 @@ const addGroup = async (e: any) => {
 const toDashboard = () => {
   router.push("/dashboard");
 };
+
+onMounted(async () => {
+  await getGroups();
+  if (groupStore.activeGroup) {
+    selectedGroup.value = groupStore.activeGroup;
+  }
+});
 </script>
 <style scoped></style>

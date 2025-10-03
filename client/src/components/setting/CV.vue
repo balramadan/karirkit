@@ -1,7 +1,7 @@
 <template>
   <DashboardLayout>
     <template #default>
-      <div class="grid grid-cols-1 md:grid-cols-12 gap-4 my-5">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-5 my-5">
         <div class="sm:col-span-3 lg:col-span-2">
           <Settings />
         </div>
@@ -22,7 +22,7 @@
                   type="file"
                   @change="handleFileChange"
                   accept=".pdf,.doc,.docx"
-                  class="mt-1 block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 dark:file:bg-blue-700 dark:file:text-white hover:file:bg-blue-900 file:cursor-pointer"
+                  class="mt-1 block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-600 dark:file:bg-blue-700 dark:file:text-white hover:file:bg-blue-700 hover:dark:file:bg-blue-800 file:cursor-pointer"
                 />
               </div>
 
@@ -106,14 +106,14 @@
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import DashboardLayout from "@/layouts/DashboardLayout.vue";
-import Settings from "@/components/menu/Settings.vue";
 import { useToast } from "primevue/usetoast";
 import { Form } from "@primevue/forms";
-import Button from "primevue/button";
-import Dialog from "primevue/dialog";
 import { Icon } from "@iconify/vue";
 import { uploadCv, getCvs, deleteCv } from "@/lib/storage";
+import DashboardLayout from "@/layouts/DashboardLayout.vue";
+import Settings from "@/components/menu/Settings.vue";
+import Button from "primevue/button";
+import Dialog from "primevue/dialog";
 
 interface CV {
   _id: string;

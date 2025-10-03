@@ -92,3 +92,16 @@ export async function deleteCoverLetter(coverLetterId: string) {
   );
   return response.data; // Mengharapkan balasan: { message: string }
 }
+
+export async function uploadAvatar(file: File) {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await api.post(`${baseAPIUrl}/v1/storage/avatar`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  return response.data;
+}

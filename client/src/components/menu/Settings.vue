@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Menu :model="mainMenus" class="!border-none !text-sm dark:!bg-[#131313]">
+    <Menu :model="mainMenus" class="xl:!w-10 !border-none !text-sm dark:!bg-darkprimary" :pt="{ list: { class: '!p-0 xl:!w-42.5' } }">
       <template #item="{ item, props }">
         <RouterLink
           v-if="item.url"

@@ -9,4 +9,6 @@
 @theme {
   --font-inter: "Inter", sans-serif;
   --font-lato: "Lato", sans-serif;
+  --color-darkprimary: #1e201e;
+  --color-darksecond: #2a2a3a;
 }
