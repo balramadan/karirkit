@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-4 py-5 rounded-xl h-[76vh] max-h-full">
+  <div class="flex flex-col gap-4 py-5 rounded-xl h-[71.5vh] max-h-full">
     <div class="flex items-center justify-between">
       <h2 class="text-lg font-semibold text-black dark:text-white">
         Job Application
@@ -26,14 +26,14 @@
       <Skeleton v-for="i in 5" class="!w-64 !h-full" />
     </div>
     <div
-      v-else
+      v-else-if="!error"
       id="container-kanban"
       class="flex overflow-x-scroll overflow-auto h-full gap-4"
     >
       <div
         v-for="s in statuses"
         :key="s"
-        class="min-w-64 w-64 h-fit shrink-0 border border-black/10 bg-blue-500/5 py-3 rounded-lg dark:border-white/10 dark:bg-[#2A2A3A]"
+        class="min-w-64 w-64 h-fit shrink-0 border border-black/10 bg-blue-500/5 py-3 rounded-lg dark:border-white/10 dark:bg-darksecond"
       >
         <div
           class="mb-3 flex items-center justify-between border-b border-black/10 pb-2 px-3 dark:border-white/10"
@@ -52,14 +52,14 @@
           :list="columns[s]"
           item-key="_id"
           :group="{ name: 'kanban', pull: true, put: true }"
-          class="flex min-h-10 flex-col gap-2 px-3 cursor-pointer transition-all duration-300 ease-in-out"
+          class="flex min-h-10 flex-col gap-2 px-3 cursor-grab transition-all duration-300 ease-in-out"
           ghost-class="opacity-30"
           :data-status="s"
           @change="onDragChange(s, $event)"
         >
           <template #item="{ element }">
             <div
-              class="rounded-lg border border-black/10 bg-white p-3 shadow-sm dark:border-white/10 dark:bg-[#2A2A3A] group"
+              :class="['rounded-lg border border-black/10 bg-white p-3 shadow-sm dark:border-white/10 dark:bg-white/5 group transition-opacity', { 'opacity-50': reordering }]"
             >
               <div class="text-sm font-medium text-black dark:text-[#E0E0E0]">
                 {{ element.jobTitle }}
@@ -312,10 +312,6 @@
         </div>
       </form>
     </Dialog>
-
-    <div v-if="loading" class="text-sm opacity-70 text-black dark:text-white">
-      Loading…
-    </div>
     <div v-if="error" class="text-sm text-red-600">Error: {{ error }}</div>
   </div>
 </template>
@@ -375,6 +371,7 @@ const fetchLoading = ref(false);
 const creating = ref(false);
 const updating = ref(false);
 const error = ref<string | null>(null);
+const reordering = ref(false);
 
 // Dialog Add tunggal
 const addDialogVisible = ref(false);
@@ -537,6 +534,7 @@ function buildUpdatesFor(status: Status) {
 
 async function onDragChange(targetStatus: Status, evt: any) {
   try {
+    reordering.value = true;
     const affected = new Set<Status>();
     const fromStatus: Status | undefined = evt?.from?.dataset?.status;
     const toStatus: Status | undefined = evt?.to?.dataset?.status;
@@ -550,9 +548,12 @@ async function onDragChange(targetStatus: Status, evt: any) {
     if (!affected.size) affected.add(targetStatus);
 
     const updates = Array.from(affected).flatMap((s) => buildUpdatesFor(s));
+    console.log(updates)
     await reorderApplications(updates);
-  } catch (e: any) {
-    await refresh();
+  } catch (e) {
+    await refresh(); // Panggil refresh untuk mengembalikan state yang benar dari server sebagai fallback
+  } finally {
+    reordering.value = false;
   }
 }
 
@@ -567,7 +568,8 @@ async function onDelete(id: string, s: Status) {
     if (updates.length) await reorderApplications(updates);
   } catch (e) {
     columns[s].splice(idx, 0, removed);
-    alert("Failed to delete");
+    // Tampilkan notifikasi error yang lebih informatif
+    alert("Failed to delete application. Please try again.");
   }
 }
 

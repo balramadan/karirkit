@@ -198,8 +198,11 @@ appRouter.post(
   async (req, res) => {
     try {
       const updates = Array.isArray(req.body?.updates) ? req.body.updates : [];
-      if (!updates.length)
-        return res.status(400).json({ message: "No updates" });
+      // PERBAIKAN: Jika tidak ada update, anggap saja berhasil (No-Op).
+      // Ini mencegah error saat kolom terakhir dikosongkan.
+      if (!updates.length) {
+        return res.status(204).send();
+      }
 
       const ops = updates.map(({ id, status, position }) => ({
         updateOne: {

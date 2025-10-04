@@ -40,7 +40,7 @@
           option-value="_id"
           placeholder="Select Group"
           size="small"
-          class="!border-blue-600 dark:!border-white"
+          class="!border-blue-600 dark:!border-white !bg-transparent dark:!bg-darksecond"
           showClear
           :pt="{
             label: {
