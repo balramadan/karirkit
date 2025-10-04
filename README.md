@@ -1,7 +1,5 @@
 # KarirKit - Job Application Tracker
 
-![KarirKit Banner](https://via.placeholder.com/1200x300.png?text=KarirKit)
-
 **KarirKit** adalah aplikasi web yang dirancang untuk membantu para pencari kerja mengelola dan melacak semua lamaran pekerjaan mereka di satu tempat. Dengan antarmuka yang intuitif, Anda dapat dengan mudah memantau status setiap lamaran, mulai dari "Dilamar" hingga "Diterima".
 
 ## ✨ Fitur Utama
