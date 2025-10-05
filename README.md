@@ -7,7 +7,7 @@
 - **Manajemen Lamaran**: Tambah, lihat, edit, dan hapus lamaran pekerjaan Anda.
 - **Pelacakan Status**: Kelola lamaran dalam berbagai status (misalnya, Dilamar, Wawancara, Penawaran) dengan mudah.
 - **Pengelompokan Kustom**: Buat grup untuk mengorganisir lamaran, misalnya berdasarkan jenis pekerjaan, lokasi, atau prioritas.
-- **Pencarian & Filter**: Temukan lamaran dengan cepat menggunakan pencarian teks, filter berdasarkan status, atau grup.
+<!-- - **Pencarian & Filter**: Temukan lamaran dengan cepat menggunakan pencarian teks, filter berdasarkan status, atau grup. -->
 - **Drag & Drop**: Atur ulang posisi dan status lamaran dengan antarmuka seret dan lepas (drag-and-drop).
 - **Otentikasi Aman**: Sistem login yang aman menggunakan JWT (JSON Web Tokens) untuk melindungi data Anda.
 - **Desain Responsif**: Akses dan kelola lamaran Anda dari perangkat apa pun, baik desktop maupun mobile.
@@ -24,8 +24,10 @@ Proyek ini dibangun menggunakan tumpukan teknologi modern yang andal dan skalabe
 - **Passport.js (JWT Strategy)**: Middleware otentikasi untuk mengamankan endpoint API.
 
 ### Frontend
-- *(Sebutkan teknologi frontend Anda di sini, mis: React, Vue, Svelte, dll.)*
-- *(Sebutkan library UI Anda, mis: Tailwind CSS, Material-UI, Chakra UI, dll.)*
+- **Vue.js**: Framework progresive javascript
+- **TailwindCSS**: Framework utility-first css
+- **Pinia**: State management
+- **PrimeVue**: UI components
 
 ## 🚀 Memulai Proyek
 
@@ -108,7 +110,7 @@ Kontribusi sangat kami hargai! Jika Anda ingin berkontribusi, silakan fork repos
 
 ## 📜 Lisensi
 
-Proyek ini dilisensikan di bawah Lisensi MIT. Lihat file `LICENSE` untuk detailnya.
+Proyek ini dilisensikan di bawah Lisensi GNU GPLv3. Lihat file `LICENSE` untuk detailnya.
 
 ---
 
