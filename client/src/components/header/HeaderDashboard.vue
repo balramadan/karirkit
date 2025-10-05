@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex items-center justify-between py-2.5 px-5 sm:px-6 lg:px-20 xl:px-40 shadow-sm"
+    class="flex items-center justify-between py-2.5 px-5 sm:px-6 lg:px-20 xl:px-38 shadow-sm"
   >
     <div class="relative flex md:hidden items-center justify-between">
       <Icon
@@ -81,7 +81,7 @@
       <SwitchMode class="hidden sm:block" />
 
       <div
-        class="flex flex-row gap-2 items-center px-2.5 py-2.5 cursor-pointer rounded-full group hover:bg-blue-600/5 hover:bg-white/5 transition-all duration-300 ease-in-out"
+        class="flex flex-row gap-2 items-center px-2.5 py-2.5 cursor-pointer rounded-full group hover:bg-blue-600/5 hover:dark:bg-white/5 transition-all duration-300 ease-in-out"
         @click="toggle"
       >
         <Avatar
@@ -96,7 +96,7 @@
           class="!size-9"
           shape="circle"
         />
-        <p>{{ props.dataUser?.name }}</p>
+        <p class="px-1">{{ props.dataUser?.name }}</p>
         <Menu ref="menu" id="overlay_menu" :model="items" :popup="true">
           <template #item="{ item, props }">
             <RouterLink

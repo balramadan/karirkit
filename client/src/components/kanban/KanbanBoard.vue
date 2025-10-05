@@ -59,7 +59,10 @@
         >
           <template #item="{ element }">
             <div
-              :class="['rounded-lg border border-black/10 bg-white p-3 shadow-sm dark:border-white/10 dark:bg-white/5 group transition-opacity', { 'opacity-50': reordering }]"
+              :class="[
+                'rounded-lg border border-black/10 bg-white p-3 shadow-sm dark:border-white/10 dark:bg-white/5 group transition-opacity',
+                { 'opacity-50': reordering },
+              ]"
             >
               <div class="text-sm font-medium text-black dark:text-[#E0E0E0]">
                 {{ element.jobTitle }}
@@ -179,8 +182,9 @@
           rows="4"
         ></textarea>
 
-        <div class="flex justify-between items-center gap-2">
+        <div class="flex flex-col justify-between items-center gap-2">
           <CV @change="cvOnChange" />
+          <CoverLetter @change="coverLetterOnChange" />
         </div>
 
         <textarea
@@ -282,8 +286,12 @@
           rows="4"
         ></textarea>
 
-        <div class="flex justify-between items-center gap-2">
+        <div class="flex flex-col justify-between items-center gap-2">
           <CV :default="editForm.cvVersion" @change="cvOnChange" />
+          <CoverLetter
+            :default="editForm.coverLetterVersion"
+            @change="coverLetterOnChange"
+          />
         </div>
 
         <textarea
@@ -336,6 +344,7 @@ import Dialog from "primevue/dialog";
 import Button from "primevue/button";
 import DatePicker from "primevue/datepicker";
 import CV from "@/components/select/CV.vue";
+import CoverLetter from "@/components/select/CoverLetter.vue";
 
 const statuses = [
   "backlog",
@@ -384,6 +393,7 @@ const addForm = reactive({
   jobDescription: "",
   appliedAt: null as Date | null,
   cvVersion: "",
+  coverLetterVersion: "",
 });
 
 // Dialog Edit
@@ -399,6 +409,7 @@ const editForm = reactive({
   status: "backlog" as Status,
   appliedAt: null as Date | null,
   cvVersion: "",
+  coverLetterVersion: "",
 });
 
 function openAddDialog() {
@@ -417,6 +428,7 @@ function closeAddDialog() {
   addForm.jobDescription = "";
   addForm.appliedAt = null;
   addForm.cvVersion = "";
+  addForm.coverLetterVersion = "";
 }
 
 function openEditDialog(item: Application) {
@@ -432,6 +444,7 @@ function openEditDialog(item: Application) {
   editForm.jobDescription = item.jobDescription || "";
   editForm.appliedAt = item.appliedAt ? new Date(item.appliedAt) : null;
   editForm.cvVersion = item.cvVersion || "";
+  editForm.coverLetterVersion = item.coverLetterVersion || "";
   editDialogVisible.value = true;
 }
 
@@ -490,6 +503,7 @@ async function onCreate() {
       appliedAt: addForm.appliedAt || undefined,
       groupId: activeGroup.value || undefined,
       cvVersion: addForm.cvVersion || null,
+      coverLetterVersion: addForm.coverLetterVersion || null,
     } as any);
     columns[s].push(doc);
     closeAddDialog();
@@ -512,6 +526,9 @@ async function onUpdate() {
       notes: editForm.notes || undefined,
       jobDescription: editForm.jobDescription || undefined,
       appliedAt: editForm.appliedAt?.toISOString() || undefined,
+      groupId: activeGroup.value || undefined,
+      cvVersion: editForm.cvVersion || undefined,
+      coverLetterVersion: editForm.coverLetterVersion || undefined,
     };
 
     await updateApplication(editingItem.value._id, updatedData);
@@ -548,7 +565,7 @@ async function onDragChange(targetStatus: Status, evt: any) {
     if (!affected.size) affected.add(targetStatus);
 
     const updates = Array.from(affected).flatMap((s) => buildUpdatesFor(s));
-    console.log(updates)
+    console.log(updates);
     await reorderApplications(updates);
   } catch (e) {
     await refresh(); // Panggil refresh untuk mengembalikan state yang benar dari server sebagai fallback
@@ -574,7 +591,14 @@ async function onDelete(id: string, s: Status) {
 }
 
 const cvOnChange = (url: string) => {
-  addForm.cvVersion = url;
+  if (addDialogVisible.value) addForm.cvVersion = url;
+  if (editDialogVisible.value) editForm.cvVersion = url;
+};
+
+const coverLetterOnChange = (url: string) => {
+  if (addDialogVisible.value) addForm.coverLetterVersion = url;
+  if (editDialogVisible.value) editForm.coverLetterVersion = url;
+  console.log("Cover letter change to", url);
 };
 
 onMounted(refresh);

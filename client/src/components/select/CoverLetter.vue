@@ -1,16 +1,15 @@
 <template>
   <div :class="['flex flex-col gap-2 w-full', { 'flex-row': props.row }]">
-    <label class="text-xs">Curriculum Vitae</label>
+    <label class="text-xs">Cover Letter</label>
     <Select
-      v-model="selectedCv"
-      :options="cvList"
+      v-model="selectedCoverLetter"
+      :options="coverLetterList"
       optionLabel="filename"
       optionValue="url"
-      placeholder="Select CV"
+      placeholder="Select Cover Letter"
       size="small"
       class="!border-blue-600/20 dark:!border-white/20 !w-full !bg-transparent"
       showClear
-      :defaultValue="props.default"
       @change="onChange"
       :pt="{
         label: {
@@ -30,12 +29,12 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref, watch } from "vue";
-import { getCvs } from "@/lib/storage";
+import { ref, onMounted, watch } from "vue";
+import { getCoverLetter } from "@/lib/storage";
 import Select from "primevue/select";
 
-const cvList = ref();
-const selectedCv = ref();
+const coverLetterList = ref();
+const selectedCoverLetter = ref("");
 const isLoading = ref(false);
 const emit = defineEmits(["change"]);
 
@@ -50,22 +49,22 @@ const props = defineProps({
   },
 });
 
-selectedCv.value = props.default;
+selectedCoverLetter.value = props.default;
 
 const onChange = () => {
-  emit("change", selectedCv.value);
+  emit("change", selectedCoverLetter.value);
 };
 
 onMounted(async () => {
   try {
     isLoading.value = true;
-    const data = await getCvs();
-    cvList.value = data.cvs;
+    const data = await getCoverLetter();
+    coverLetterList.value = data.coverLetters;
   } catch (error) {
-    console.error("Failed to fetch CVs:", error);
+    console.error("Failed to fetch Cover Letters:", error);
   } finally {
     isLoading.value = false;
   }
 });
 </script>
-<style lang=""></style>
+<style></style>

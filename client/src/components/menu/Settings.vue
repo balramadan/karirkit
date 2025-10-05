@@ -52,7 +52,7 @@ const isActive = (item: any) => {
 
 const mainMenus = ref([
   { label: "Profile", icon: "tdesign:user", url: "/settings#profile" },
-  { label: "Appearance", icon: "tdesign:palette", url: "/settings#appearance" },
+  // { label: "Appearance", icon: "tdesign:palette", url: "/settings#appearance" },
   {
     label: "Documents",
     items: [

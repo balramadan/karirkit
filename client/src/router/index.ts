@@ -5,6 +5,14 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
+      path: "/",
+      name: "home",
+      component: () => import("@/views/LandingPageView.vue"),
+      meta: {
+        title: "KarirKit"
+      }
+    },
+    {
       path: "/dashboard",
       name: "kanban",
       component: () => import("@/views/KanbanView.vue"),

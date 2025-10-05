@@ -101,9 +101,9 @@
         />
       </Form>
 
-      <Divider class="!text-sm !my-0" align="center" type="solid">
+      <!-- <Divider class="!text-sm !my-0" align="center" type="solid">
         <b>SSO</b>
-      </Divider>
+      </Divider> -->
     </div>
     <div class="hidden md:block md:col-span-6 lg:col-span-7">
       <Image

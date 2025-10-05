@@ -1,5 +1,5 @@
 <template>
-  <footer
+  <div
     class="text-sm flex flex-row justify-between items-center py-5 px-5 sm:px-6 lg:px-20 xl:px-40"
   >
     <div class="">KarirKit &copy; {{ year }}</div>
@@ -10,9 +10,9 @@
         <Icon icon="tdesign:logo-github-filled" class="size-5" />
       </a>
     </div>
-  </footer>
+  </div>
 </template>
-<script setup>
+<script setup lang="ts">
 import { onMounted, ref } from "vue";
 import { Icon } from "@iconify/vue";
 
