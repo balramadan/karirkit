@@ -2,11 +2,11 @@
   <div
     class="flex items-center justify-between py-5 px-5 sm:px-6 lg:px-20 xl:px-40"
   >
-    <div class="relative flex md:hidden items-center justify-between">
+    <div class="relative hidden md:hidden items-center justify-between">
       <Icon icon="tdesign:menu-fold" class="block size-5" aria-hidden="true" />
     </div>
     <div
-      class="flex flex-1 items-center justify-center md:items-stretch md:justify-start"
+      class="flex items-center justify-center md:items-stretch md:justify-start"
     >
       <Image
         class="h-8 w-auto cursor-pointer light:block dark:hidden"
@@ -27,17 +27,17 @@
       <div class="hidden md:ml-6 md:block gap-5"></div>
     </div>
     <div
-      class="absolute inset-y-0 right-0 flex items-center pr-2 md:static md:flex md:gap-4 md:inset-auto md:ml-6 md:pr-0"
+      class="flex items-center pr-2 gap-2 md:static md:flex md:gap-4 md:inset-auto md:ml-6 md:pr-0"
     >
-      <SwitchMode class="hidden md:block" />
+      <SwitchMode class="" />
 
       <Button
         v-if="isAuthenticate"
-        class="hidden md:block !px-5 !text-sm !bg-blue-600 dark:!bg-blue-700 !border-none !transition-all !duration-300 !ease-in-out hover:!bg-blue-800 hover:dark:!bg-blue-900 dark:!text-white"
+        class="block !px-5 !text-sm !bg-blue-600 dark:!bg-blue-700 !border-none !transition-all !duration-300 !ease-in-out hover:!bg-blue-800 hover:dark:!bg-blue-900 dark:!text-white"
         label="Dashboard"
         @click="toDashboard"
       />
-      <div v-else class="hidden md:flex gap-2.5 items-center">
+      <div v-else class="flex gap-2.5 items-center">
         <RouterLink to="/login">
           <Button
             class="!text-blue-600/60 dark:!text-white/60 !py-1.5 !px-5 !bg-transparent !border !border-blue-600/60 dark:!border-white/60 hover:!text-blue-800 hover:dark:!text-white hover:!border-blue-800 hover:dark:!border-white !transition-all !duration-300 !ease-in-out"

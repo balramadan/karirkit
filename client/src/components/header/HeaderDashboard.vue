@@ -1,4 +1,5 @@
 <template>
+  <ConfirmDialog></ConfirmDialog>
   <div
     class="flex items-center justify-between py-2.5 px-5 sm:px-6 lg:px-20 xl:px-38 shadow-sm"
   >
@@ -52,19 +53,28 @@
           }"
         >
           <template #option="slotProps">
-            <div :class="['flex items-center']">
+            <div :class="['!flex !items-center !justify-between !gap-2']">
               <div>{{ slotProps.option.name }}</div>
             </div>
           </template>
           <template #footer>
             <div class="p-2.5">
               <Button
-                @click="addGroupDialog = true"
+                v-if="selectedGroup"
+                label="Delete"
+                severity="danger"
+                variant="text"
+                size="small"
+                fluid
+                @click="deleteGroup()"
+              ></Button>
+              <Button
                 label="Add New"
                 severity="secondary"
                 variant="text"
                 size="small"
                 fluid
+                @click="addGroupDialog = true"
               >
                 <template #icon>
                   <Icon icon="tdesign:folder-add-1" />
@@ -78,10 +88,10 @@
     <div
       class="absolute inset-y-0 right-0 flex items-center pr-2 md:static md:flex md:gap-4 md:inset-auto md:ml-6 md:pr-0"
     >
-      <SwitchMode class="hidden sm:block" />
+      <SwitchMode class="hidden md:block" />
 
       <div
-        class="flex flex-row gap-2 items-center px-2.5 py-2.5 cursor-pointer rounded-full group hover:bg-blue-600/5 hover:dark:bg-white/5 transition-all duration-300 ease-in-out"
+        class="hidden md:flex flex-row gap-2 items-center px-2.5 py-2.5 cursor-pointer rounded-full group hover:bg-blue-600/5 hover:dark:bg-white/5 transition-all duration-300 ease-in-out"
         @click="toggle"
       >
         <Avatar
@@ -90,12 +100,7 @@
           class="!size-9"
           shape="circle"
         />
-        <Avatar
-          v-else
-          :label="initial"
-          class="!size-9"
-          shape="circle"
-        />
+        <Avatar v-else :label="initial" class="!size-9" shape="circle" />
         <p class="px-1">{{ props.dataUser?.name }}</p>
         <Menu ref="menu" id="overlay_menu" :model="items" :popup="true">
           <template #item="{ item, props }">
@@ -201,12 +206,14 @@ import { Icon } from "@iconify/vue";
 import { api } from "@/lib/axios";
 import { Form } from "@primevue/forms";
 import { useToast } from "primevue/usetoast";
+import { useConfirm } from "primevue/useconfirm";
 import { useGroupStore } from "@/stores/group";
-import { getInitials } from "@/composables/text"
+import { getInitials } from "@/composables/text";
 import Skeleton from "primevue/skeleton";
 import Image from "primevue/image";
 import Select from "primevue/select";
 import Dialog from "primevue/dialog";
+import ConfirmDialog from "primevue/confirmdialog";
 import Drawer from "primevue/drawer";
 import Button from "primevue/button";
 import Avatar from "primevue/avatar";
@@ -243,11 +250,12 @@ const items = ref([
 
 const groupStore = useGroupStore();
 const toast = useToast();
+const confirm = useConfirm();
 const drawer = ref(false);
 const toggle = (event: any) => {
   menu.value.toggle(event);
 };
-const initial = getInitials(props.dataUser?.name)
+const initial = getInitials(props.dataUser?.name);
 
 const getGroups = async () => {
   try {
@@ -270,11 +278,50 @@ const changeGroup = () => {
   console.log("Group change");
 };
 
+const deleteGroup = () => {
+  confirm.require({
+    message: `Are you sure you want to delete this group?`,
+    header: "Delete",
+    rejectProps: {
+      label: "Cancel",
+      severity: "secondary",
+      outlined: true,
+    },
+    acceptProps: {
+      label: "Delete",
+      severity: "danger",
+    },
+    accept: async () => {
+      try {
+        const response = await groupStore.deleteGroup(selectedGroup.value);
+
+        if (response) {
+          toast.add({
+            severity: "success",
+            summary: "Success",
+            detail: "Successfully deleted",
+            life: 3000,
+          });
+
+          getGroups()
+        }
+      } catch (error) {
+        toast.add({
+          severity: "error",
+          summary: "Failed",
+          detail: "Failed when trying to delete",
+          life: 3000,
+        });
+      }
+    },
+  });
+};
+
 const addGroup = async (e: any) => {
   try {
     console.log(e?.states.groupName.value);
     const response = await api.post(
-      "/v1/group",
+      "/group",
       {
         name: e?.states.groupName.value,
       },
@@ -301,6 +348,7 @@ const addGroup = async (e: any) => {
       detail: response.data?.message,
       life: 3000,
     });
+    addGroupDialog.value = false
   } catch (err) {
     console.error(err);
   }

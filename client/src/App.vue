@@ -3,9 +3,9 @@ import Toast from "primevue/toast";
 </script>
 
 <template>
-  <div class="font-inter dark:bg-[#1E201E]">
-    <Toast class="w-full" />
-    <RouterView />
+  <div class="font-inter dark:bg-darkprimary">
+    <Toast class="" />
+    <RouterView class="" />
   </div>
 </template>
 

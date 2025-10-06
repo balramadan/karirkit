@@ -42,7 +42,7 @@ const activeTab = computed(() => {
 const fetchUserData = async () => {
   try {
     isLoading.value = true;
-    const response = await api.get("/v1/user");
+    const response = await api.get("/user");
     userData.value = response.data;
   } catch (error) {
     console.error("Failed to fetch data user:", error);

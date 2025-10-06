@@ -2,7 +2,7 @@ import axios from "axios";
 import { useAuthStore } from "@/stores/auth";
 import router from '@/router/index'
 
-const baseURL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+const baseURL = "/api";
 
 /* The code `export const api = axios.create({baseURL, withCredentials: true});` is creating an
 instance of Axios with a specific base URL and with credentials set to true. This instance is then

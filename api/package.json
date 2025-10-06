@@ -1,14 +1,14 @@
 {
-  "name": "server",
-  "version": "1.0.0",
+  "name": "karirkit-api",
+  "version": "0.0.5",
   "description": "",
-  "main": "app.js",
+  "main": "index.js",
   "scripts": {
-    "dev": "cross-env DOTENV_CONFIG_PATH=../.env nodemon -r dotenv/config app.js",
+    "dev": "cross-env DOTENV_CONFIG_PATH=../.env nodemon -r dotenv/config index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "Iqbal Ramadan",
   "license": "GPL-3.0-or-later",
   "type": "module",
   "dependencies": {

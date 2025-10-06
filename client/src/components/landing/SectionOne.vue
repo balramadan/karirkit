@@ -13,7 +13,7 @@
     </p>
     <div class="mt-8 flex justify-center gap-4">
       <RouterLink to="/register">
-        <Button class="!bg-blue-600 dark:bg-white !border-none" label="Sign up for free" size="large" />
+        <Button class="!text-white !bg-blue-600 dark:!bg-blue-700 hover:!bg-blue-800 hover:dark:!bg-blue-900 transition-all ease-in-out duration-300 !border-none" label="Sign up for free" size="large" />
       </RouterLink>
     </div>
   </section>

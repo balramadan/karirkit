@@ -1,12 +1,12 @@
 # Dependencies
 /node_modules
 /client/node_modules
-/server/node_modules
+/api/node_modules
 
 # Build output
 /dist
 /client/dist
-/server/dist
+/api/dist
 /build
 
 # Environment variables

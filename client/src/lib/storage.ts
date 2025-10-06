@@ -12,7 +12,7 @@ export async function uploadCv(file: File) {
   const formData = new FormData();
   formData.append("file", file);
 
-  const response = await api.post(`${baseAPIUrl}/v1/storage/cvs`, formData, {
+  const response = await api.post(`/storage/cvs`, formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
 
@@ -23,11 +23,11 @@ export async function uploadCv(file: File) {
  * This TypeScript function asynchronously fetches a list of CVs from a specified API endpoint and
  * returns the data containing an array of CV objects.
  * @returns The `getCvs` function is returning the data from the response received after making a GET
- * request to `/v1/storage/cvs`. The expected response is an object with a property `cvs`
+ * request to ` /storage/cvs`. The expected response is an object with a property `cvs`
  * which is an array of CV objects.
  */
 export async function getCvs() {
-  const response = await api.get(`${baseAPIUrl}/v1/storage/cvs`);
+  const response = await api.get(`/storage/cvs`);
   return response.data; // Mengharapkan balasan: { cvs: CV[] }
 }
 
@@ -39,7 +39,7 @@ export async function getCvs() {
  * object with a `message` property of type string.
  */
 export async function deleteCv(cvId: string) {
-  const response = await api.delete(`${baseAPIUrl}/v1/storage/cvs/${cvId}`);
+  const response = await api.delete(`/storage/cvs/${cvId}`);
   return response.data; // Mengharapkan balasan: { message: string }
 }
 
@@ -57,7 +57,7 @@ export async function uploadCoverLetter(file: File) {
   formData.append("file", file);
 
   const response = await api.post(
-    `${baseAPIUrl}/v1/storage/cover-letters`,
+    `/storage/cover-letters`,
     formData,
     {
       headers: { "Content-Type": "multipart/form-data" },
@@ -73,7 +73,7 @@ export async function uploadCoverLetter(file: File) {
  * letters.
  */
 export async function getCoverLetter() {
-  const response = await api.get(`${baseAPIUrl}/v1/storage/cover-letters`);
+  const response = await api.get(`/storage/cover-letters`);
   return response.data;
 }
 
@@ -88,7 +88,7 @@ export async function getCoverLetter() {
  */
 export async function deleteCoverLetter(coverLetterId: string) {
   const response = await api.delete(
-    `${baseAPIUrl}/v1/storage/cover-letters/${coverLetterId}`
+    `${baseAPIUrl} /storage/cover-letters/${coverLetterId}`
   );
   return response.data; // Mengharapkan balasan: { message: string }
 }
@@ -97,7 +97,7 @@ export async function uploadAvatar(file: File) {
   const formData = new FormData();
   formData.append("file", file);
 
-  const response = await api.post(`${baseAPIUrl}/v1/storage/avatar`, formData, {
+  const response = await api.post(`/storage/avatar`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },

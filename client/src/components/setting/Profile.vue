@@ -136,7 +136,7 @@ const changeProfile = async () => {
       await uploadAvatar(selectedAvatarFile.value);
     }
 
-    const data = await api.patch("/v1/user", {
+    const data = await api.patch("/user", {
       name: name.value,
       email: email.value,
     });

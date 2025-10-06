@@ -6,7 +6,7 @@
       </h2>
       <div class="flex items-center gap-2">
         <button
-          class="rounded-md bg-blue-600 px-3 py-2 text-white cursor-pointer transition-all duration-300 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 disabled:opacity-60"
+          class="rounded-md bg-blue-600 px-3 py-2 text-white cursor-pointer transition-all duration-300 hover:bg-blue-700 dark:bg-blue-400 dark:hover:bg-blue-500 disabled:opacity-60"
           @click="openAddDialog"
           :disabled="creating"
           title="Add"
@@ -33,7 +33,7 @@
       <div
         v-for="s in statuses"
         :key="s"
-        class="min-w-64 w-64 h-fit shrink-0 border border-black/10 bg-blue-500/5 py-3 rounded-lg dark:border-white/10 dark:bg-darksecond"
+        class="min-w-64 w-64 h-fit shrink-0 border border-black/10 bg-blue-500/5 py-3 rounded-lg dark:border-white/10 dark:bg-darksecond select-none"
       >
         <div
           class="mb-3 flex items-center justify-between border-b border-black/10 pb-2 px-3 dark:border-white/10"
@@ -76,7 +76,7 @@
                 <a
                   v-if="element.jobUrl"
                   :href="element.jobUrl"
-                  class="text-xs text-blue-600 hover:underline"
+                  class="text-xs text-blue-600 dark:text-blue-400 hover:underline"
                   target="_blank"
                 >
                   Open job

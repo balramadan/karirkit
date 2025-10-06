@@ -6,14 +6,14 @@
       <h2
         class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl"
       >
-        Siap Mengambil Kendali Pencarian Kerjamu?
+      Ready to take control of your job search?
       </h2>
       <p class="mt-4 text-lg text-gray-600 dark:text-gray-400">
-        Daftar sekarang dan mulai lacak lamaran kerjamu secara efisien.
+        Sign up now and start tracking your job applications efficiently.
       </p>
       <div class="mt-8">
         <RouterLink to="/register">
-          <Button class="!bg-blue-600 dark:!bg-white/70 hover:!bg-blue-800 hover:dark:!bg-white !border-none" label="Daftar Sekarang, Gratis!" size="large" />
+          <Button class="!bg-blue-600 dark:!bg-white/70 hover:!bg-blue-800 hover:dark:!bg-white !border-none" label="Sign up now, it's free!" size="large" />
         </RouterLink>
       </div>
     </div>

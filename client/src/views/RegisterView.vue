@@ -4,9 +4,9 @@
       class="flex flex-col gap-4 justify-center items-start px-5 md:px-20 py-5 col-span-1 w-full md:col-span-6 lg:col-span-5"
     >
       <h3 class="font-bold text-2xl">Sign up for free</h3>
-      <p class="text-sm text-black/60">
+      <p class="text-sm text-black/60 dark:text-white/60">
         Already have an account?
-        <RouterLink to="/login" class="text-blue-700">Sign in here</RouterLink>
+        <RouterLink to="/login" class="text-blue-600 dark:text-blue-500">Sign in here</RouterLink>
       </p>
       <Form
         v-slot="$form"
@@ -95,7 +95,7 @@
           >
         </div>
         <Button
-          class="mt-8 !text-sm w-full !bg-blue-700 !border-none !transition-all !duration-300 !ease-in-out dark:!text-white hover:!bg-blue-900"
+          class="mt-8 !text-sm w-full !bg-blue-600 dark:!bg-blue-500 !border-none !transition-all !duration-300 !ease-in-out dark:!text-white hover:!bg-blue-800 hover:dark:!bg-blue-700"
           label="Sign up"
           type="submit"
         />
@@ -192,7 +192,7 @@ const baseurl = import.meta.env.VITE_API_BASE_URL;
 
 const submitSignUp = async (e: any) => {
   try {
-    const response = await fetch(`${baseurl}/v1/auth/signup`, {
+    const response = await fetch(`/api/auth/signup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
