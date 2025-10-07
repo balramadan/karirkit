@@ -15,7 +15,7 @@ connectDB()
 const app = express();
 
 // Daftar origin yang diizinkan
-const allowedOrigins = ['http://localhost:5173', process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`].filter(Boolean);
+const allowedOrigins = ['http://localhost:5173', 'https://karirkit.vercel.app'];
 
 // Middleware
 app.use(
