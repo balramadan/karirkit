@@ -20,7 +20,7 @@
     },
     {
       "source": "/((?!api/|assets/|favicon.ico).*)",
-      "destination": "/index.html"
+      "destination": "/client/index.html"
     }
   ]
 }
