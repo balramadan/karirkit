@@ -13,7 +13,7 @@
         class="py-5 w-full"
         :initialValues
         :resolver="resolver"
-        @click="submitSignUp"
+        @submit="submitSignUp"
       >
         <div class="flex flex-col gap-2">
           <div class="flex flex-row gap-2">
