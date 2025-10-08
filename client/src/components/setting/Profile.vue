@@ -25,6 +25,7 @@
             </div>
             <div class="flex flex-col gap-2">
               <span>Password</span>
+              <!-- TODO: Tambahkan fitur ganti password -->
               <Button
                 class="w-35 !text-xs !bg-blue-700 !border-none !transition-all !duration-300 !ease-in-out hover:!bg-blue-900 dark:!text-white"
                 label="Change Password"
@@ -129,6 +130,7 @@ onUnmounted(() => {
   }
 });
 
+// TODO Tambah logic untuk update ke pinia
 const changeProfile = async () => {
   isLoading.value = true;
   try {

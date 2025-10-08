@@ -1,5 +1,6 @@
 <template>
-  <div class="flex flex-col gap-4 py-5 rounded-xl h-[71.5vh] max-h-full">
+  <ConfirmDialog></ConfirmDialog>
+  <div class="flex flex-col gap-4 py-5 rounded-xl h-[80vh] max-h-full">
     <div class="flex items-center justify-between">
       <h2 class="text-lg font-semibold text-black dark:text-white">
         Job Application
@@ -338,6 +339,7 @@ import {
 import { scrapeJob } from "@/composables/scrapeJob";
 import { useGroupStore } from "@/stores/group";
 import { storeToRefs } from "pinia";
+import { useConfirm } from "primevue/useconfirm";
 import Skeleton from "primevue/skeleton";
 import draggable from "vuedraggable";
 import Dialog from "primevue/dialog";
@@ -374,6 +376,7 @@ const columns = reactive<Record<Status, Application[]>>({
 
 const groupStore = useGroupStore();
 const { activeGroup } = storeToRefs(groupStore);
+const confirm = useConfirm();
 
 const loading = ref(false);
 const fetchLoading = ref(false);
@@ -549,6 +552,7 @@ function buildUpdatesFor(status: Status) {
   }));
 }
 
+// BUG: Ketika elemen di geser status di edit masih status sebelumnya
 async function onDragChange(targetStatus: Status, evt: any) {
   try {
     reordering.value = true;
@@ -565,7 +569,6 @@ async function onDragChange(targetStatus: Status, evt: any) {
     if (!affected.size) affected.add(targetStatus);
 
     const updates = Array.from(affected).flatMap((s) => buildUpdatesFor(s));
-    console.log(updates);
     await reorderApplications(updates);
   } catch (e) {
     await refresh(); // Panggil refresh untuk mengembalikan state yang benar dari server sebagai fallback
@@ -575,19 +578,34 @@ async function onDragChange(targetStatus: Status, evt: any) {
 }
 
 async function onDelete(id: string, s: Status) {
-  if (!confirm("Delete this application?")) return;
-  const idx = columns[s].findIndex((x) => x._id === id);
-  if (idx === -1) return;
-  const removed = columns[s].splice(idx, 1)[0];
-  try {
-    await deleteApplication(id);
-    const updates = buildUpdatesFor(s);
-    if (updates.length) await reorderApplications(updates);
-  } catch (e) {
-    columns[s].splice(idx, 0, removed);
-    // Tampilkan notifikasi error yang lebih informatif
-    alert("Failed to delete application. Please try again.");
-  }
+  confirm.require({
+    message: "Are you sure you want to delete this?",
+    header: "Delete",
+    rejectProps: {
+      label: "Cancel",
+      severity: "secondary",
+      outlined: true,
+    },
+    acceptProps: {
+      label: "Delete",
+      severity: "danger",
+    },
+    accept: async () => {
+      const idx = columns[s].findIndex((x) => x._id === id);
+      if (idx === -1) return;
+      const removed = columns[s].splice(idx, 1)[0];
+      try {
+        await deleteApplication(id);
+        const updates = buildUpdatesFor(s);
+        if (updates.length) await reorderApplications(updates);
+      } catch (e) {
+        columns[s].splice(idx, 0, removed);
+        // Tampilkan notifikasi error yang lebih informatif
+        alert("Failed to delete application. Please try again.");
+      }
+    },
+    reject: () => {}
+  });
 }
 
 const cvOnChange = (url: string) => {
@@ -598,7 +616,6 @@ const cvOnChange = (url: string) => {
 const coverLetterOnChange = (url: string) => {
   if (addDialogVisible.value) addForm.coverLetterVersion = url;
   if (editDialogVisible.value) editForm.coverLetterVersion = url;
-  console.log("Cover letter change to", url);
 };
 
 onMounted(refresh);

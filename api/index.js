@@ -10,12 +10,13 @@ import storageRouter from "./routes/storage.js";
 import userRouter from "./routes/user.js";
 import groupRouter from "./routes/group.js";
 
-connectDB()
+// connectDB()
 
 const app = express();
+const port = 3000;
 
 // Daftar origin yang diizinkan
-const allowedOrigins = ['http://localhost:5173', 'https://karirkit.vercel.app'];
+const allowedOrigins = ["http://localhost:5173", "https://karirkit.vercel.app"];
 
 // Middleware
 app.use(
@@ -36,21 +37,21 @@ app.use("/api/scrape", scrapeRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/storage", storageRouter);
 app.use("/api/user", userRouter);
-app.use("/api/group", groupRouter)
+app.use("/api/group", groupRouter);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-// connectDB(process.env.MONGODB_URI)
-//   .then(() => {
-//     app.listen(port, () => {
-//       console.log(`Server is running on http://localhost:${port}`);
-//     });
-//   })
-//   .catch((err) => {
-//     console.error("Failed to connect to MongoDB", err);
-//     process.exit(1);
-//   });
+connectDB(process.env.MONGODB_URI)
+  .then(() => {
+    app.listen(port, () => {
+      console.log(`Server is running on http://localhost:${port}`);
+    });
+  })
+  .catch((err) => {
+    console.error("Failed to connect to MongoDB", err);
+    process.exit(1);
+  });
 
-export default app;
+export default app; 

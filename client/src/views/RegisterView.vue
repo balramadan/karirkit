@@ -193,7 +193,7 @@ const baseurl = import.meta.env.VITE_API_BASE_URL;
 
 const submitSignUp = async (e: any) => {
   try {
-    const response = await fetch(`https://karirkit-api.vercel.app/api/auth/signup`, {
+    const response = await fetch(`${baseurl}/auth/signup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

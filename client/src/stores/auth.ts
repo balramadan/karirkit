@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
+import { api } from "@/lib/axios"
 
 export const useAuthStore = defineStore(
   "auth",
@@ -61,7 +62,18 @@ export const useAuthStore = defineStore(
       token.value = null;
     }
 
-    return { idUser, nameUser, photoUrlUser, token, isAuthenticated, setUser, getUser, clearUser };
+    async function fetchUser() {
+      try {
+        const { data } = await api.get("/user");
+        idUser.value = data._id
+        nameUser.value = data.name
+        photoUrlUser.value = data.photoUrl
+      } catch (error) {
+        console.error("Failed to fetch data user:", error);
+      }
+    }
+
+    return { idUser, nameUser, photoUrlUser, token, isAuthenticated, setUser, getUser, clearUser, fetchUser };
   },
   {
     persist: {

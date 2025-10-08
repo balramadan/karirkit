@@ -13,7 +13,7 @@
           </p>
           <div class="mt-4">
             <Form
-              @submit.prevent="handleUploadCv"
+              @submit="handleUploadCv"
               class="flex flex-col md:flex-row justify-center md:justify-between items-center"
             >
               <div class="mb-4">
