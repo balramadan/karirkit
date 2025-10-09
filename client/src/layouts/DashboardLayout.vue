@@ -6,18 +6,12 @@
   </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { computed } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import HeaderDashboard from "@/components/header/HeaderDashboard.vue"; 
 import FooterDashboard from "@/components/footer/FooterDashboard.vue";
 
 const authStore = useAuthStore();
-const dataUser = ref();
-
-const getUserInfo = () => {
-  dataUser.value = authStore.getUser();
-};
-
-onMounted(getUserInfo);
+const dataUser = computed(() => authStore.getUser());
 </script>
 <style lang=""></style>

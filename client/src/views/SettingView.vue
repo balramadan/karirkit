@@ -24,7 +24,6 @@
 import { ref, onMounted, computed, watch } from "vue";
 import { useRoute } from "vue-router";
 import { api } from "@/lib/axios";
-import { useAuthStore } from "@/stores/auth"
 import Skeleton from 'primevue/skeleton';
 import DashboardLayout from "@/layouts/DashboardLayout.vue";
 import Settings from "@/components/menu/Settings.vue";
@@ -35,7 +34,6 @@ const isLoading = ref(false);
 const userData = ref();
 
 const route = useRoute();
-const authStore = useAuthStore()
 
 const activeTab = computed(() => {
   return route.hash.replace("#", "");
@@ -46,8 +44,6 @@ const fetchUserData = async () => {
     isLoading.value = true;
     const response = await api.get("/user");
     userData.value = response.data;
-
-    authStore.fetchUser
   } catch (error) {
     console.error("Failed to fetch data user:", error);
   } finally {

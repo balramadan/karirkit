@@ -56,7 +56,7 @@
           class="flex min-h-10 flex-col gap-2 px-3 cursor-grab transition-all duration-300 ease-in-out"
           ghost-class="opacity-30"
           :data-status="s"
-          @change="onDragChange(s, $event)"
+          @end="onDragEnd"
         >
           <template #item="{ element }">
             <div
@@ -552,25 +552,31 @@ function buildUpdatesFor(status: Status) {
   }));
 }
 
-// BUG: Ketika elemen di geser status di edit masih status sebelumnya
-async function onDragChange(targetStatus: Status, evt: any) {
+// Gunakan event @end yang hanya dipicu sekali di akhir drag
+async function onDragEnd(evt: any) {
+  const fromStatus = evt.from.dataset.status as Status | undefined;
+  const toStatus = evt.to.dataset.status as Status | undefined;
+
+  // Jika tidak ada perpindahan kolom atau status, hentikan fungsi
+  if (!fromStatus || !toStatus) return;
+
+  // 1. Perbarui status item yang dipindahkan secara lokal
+  // Ini adalah kunci untuk memperbaiki bug pada form edit
+  if (fromStatus !== toStatus) {
+    const itemIndex = evt.newIndex; // Index item di kolom tujuan
+    if (columns[toStatus][itemIndex]) {
+      columns[toStatus][itemIndex].status = toStatus;
+    }
+  }
+
+  // 2. Kirim pembaruan ke backend
   try {
     reordering.value = true;
-    const affected = new Set<Status>();
-    const fromStatus: Status | undefined = evt?.from?.dataset?.status;
-    const toStatus: Status | undefined = evt?.to?.dataset?.status;
-
-    if (evt?.added?.element && toStatus) {
-      evt.added.element.status = toStatus;
-    }
-
-    if (fromStatus) affected.add(fromStatus as Status);
-    if (toStatus) affected.add(toStatus as Status);
-    if (!affected.size) affected.add(targetStatus);
-
+    const affected = new Set([fromStatus, toStatus]);
     const updates = Array.from(affected).flatMap((s) => buildUpdatesFor(s));
-    await reorderApplications(updates);
+    if (updates.length > 0) await reorderApplications(updates);
   } catch (e) {
+    console.error("Failed to save reorder:", e);
     await refresh(); // Panggil refresh untuk mengembalikan state yang benar dari server sebagai fallback
   } finally {
     reordering.value = false;
@@ -628,7 +634,27 @@ watch(activeGroup, () => {
 
 <style scoped>
 #container-kanban::-webkit-scrollbar {
-  display: none;
+  width: 8px; /* Lebar untuk scrollbar vertikal */
+  height: 8px; /* Tinggi untuk scrollbar horizontal */
 }
-/* optional small tweaks */
+
+/* Bagian track (latar belakang scrollbar) */
+#container-kanban::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+/* Bagian thumb (handle yang bisa digeser) */
+#container-kanban::-webkit-scrollbar-thumb {
+  background-color: #c1c1c1; /* Warna default untuk light mode */
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+/* Efek hover pada thumb */
+#container-kanban::-webkit-scrollbar-thumb:hover {
+  background-color: #a8a8a8;
+}
+
 </style>

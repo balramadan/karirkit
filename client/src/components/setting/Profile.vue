@@ -91,12 +91,14 @@ import { uploadAvatar } from "@/lib/storage";
 import { api } from "@/lib/axios";
 import { getInitials } from "@/composables/text"
 import type { FileUploadSelectEvent } from "primevue/fileupload";
+import { useAuthStore } from "@/stores/auth"
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import Avatar from "primevue/avatar";
 import FileUpload from "primevue/fileupload";
 
 const toast = useToast();
+const authStore = useAuthStore()
 
 const props = defineProps({
   data: {
@@ -107,8 +109,8 @@ const props = defineProps({
 
 const emit = defineEmits(['profileUpdated']);
 
-const name = ref(props.data.data?.name);
-const email = ref(props.data.data?.email);
+const name = ref(props.data?.data.name);
+const email = ref(props.data?.data.email);
 const selectedAvatarFile = ref<File | null>(null);
 const avatarPreviewUrl = ref<string | null>(null);
 const isLoading = ref(false);
@@ -119,7 +121,7 @@ const onFileSelect = (event: FileUploadSelectEvent) => {
   const file = event.files[0];
   if (file) {
     selectedAvatarFile.value = file;
-    avatarPreviewUrl.value = URL.createObjectURL(file);
+    avatarPreviewUrl.value = URL.createObjectURL(file); // This is correct
   }
 };
 
@@ -130,7 +132,6 @@ onUnmounted(() => {
   }
 });
 
-// TODO Tambah logic untuk update ke pinia
 const changeProfile = async () => {
   isLoading.value = true;
   try {
@@ -138,7 +139,7 @@ const changeProfile = async () => {
       await uploadAvatar(selectedAvatarFile.value);
     }
 
-    const data = await api.patch("/user", {
+    const { data } = await api.patch("/user", {
       name: name.value,
       email: email.value,
     });
@@ -149,6 +150,8 @@ const changeProfile = async () => {
       severity: "success",
       life: 3000,
     });
+
+    authStore.setUser(null, null, data.name, data.photoUrl);
 
     // Beri tahu parent component untuk memuat ulang data
     emit('profileUpdated');

@@ -1,189 +1,119 @@
-import puppeteer from "puppeteer";
+import puppeteer from "puppeteer-core";
+import chromium from "@sparticuz/chromium";
+import { executablePath } from "puppeteer";
 
-const UA =
-  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36 KarirKitBot/1.0";
+// Konfigurasi selector spesifik untuk setiap situs
+const siteConfigs = {
+  "www.linkedin.com": {
+    title: ".top-card-layout__title",
+    company: ".topcard__org-name-link",
+    description: ".show-more-less-html__markup",
+  },
+  "glints.com": {
+    title: "h1.career-title",
+    company: ".career-company-name a",
+    description: 'div[data-cy="job-description"]',
+  },
+  "www.jobstreet.co.id": {
+    title: 'h1[data-automation="job-title"]',
+    company: 'span[data-automation="company-name"]',
+    description: 'div[data-automation="job-details-job-description"]',
+  },
+  "glassdoor.com": {
+    title: 'h1[aria-live="polite"]',
+    company: 'h4[aria-live="polite"]',
+    description: '.jobDescriptionContent'
+  }
+  // Tambahkan situs lain di sini...
+};
 
-const NAV_TIMEOUT = parseInt(process.env.NAV_TIMEOUT ?? "90000", 10);
-const WAIT_SELECTOR_TIMEOUT = parseInt(
-  process.env.WAIT_SELECTOR_TIMEOUT ?? "20000",
-  10
-);
-
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-function normalizeUrl(url) {
-  if (!/^https?:\/\//i.test(url)) return `https://${url}`;
-  return url;
-}
-
-function getKnownSelectors(host) {
-  const rules = [
-    {
-      test: /indeed\./i,
-      selectors: ["#jobDescriptionText", ".jobsearch-jobDescriptionText"],
-    },
-    {
-      test: /linkedin\./i,
-      selectors: [
-        ".show-more-less-html__markup",
-        ".jobs-description__container",
-      ],
-    },
-    {
-      test: /(jobstreet|seek)\./i,
-      selectors: ['[data-automation="jobAdDetails"]', ".job-description"],
-    },
-    { test: /glassdoor\./i, selectors: [".jobDescriptionContent"] },
-    {
-      test: /kalibrr\./i,
-      selectors: [".k-text-original", "[data-automation='jobDesc']"],
-    },
-  ];
-  for (const r of rules) if (r.test.test(host)) return r.selectors;
-  return [];
-}
+// Selector generik sebagai fallback
+const genericDescriptionSelectors = [
+  "#job-details", ".job-details", ".job-description", "#description", ".description",
+];
 
 export async function scrapeJob(url) {
-  const target = normalizeUrl(url);
-  const u = new URL(target);
-
-  const launchOptions = {
-    headless: process.env.PUPPETEER_HEADLESS ?? "new", // set "false" untuk debug GUI
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-  };
-  if (process.env.PUPPETEER_EXECUTABLE_PATH) {
-    launchOptions.executablePath = process.env.PUPPETEER_EXECUTABLE_PATH;
-  }
-
-  const browser = await puppeteer.launch(launchOptions);
-  const page = await browser.newPage();
-
-  // Hemat bandwidth: jangan blokir stylesheet agar layout tetap render
-  await page.setRequestInterception(true);
-  page.on("request", (req) => {
-    const type = req.resourceType();
-    if (["image", "media", "font"].includes(type)) req.abort();
-    else req.continue();
-  });
-
-  await page.setUserAgent(UA);
-  await page.setExtraHTTPHeaders({
-    "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
-  });
-  await page.setViewport({ width: 1280, height: 800 });
-  page.setDefaultNavigationTimeout(NAV_TIMEOUT);
-
-  async function navigateWithRetries(page, target) {
-    const profiles = [
-      { waitUntil: "domcontentloaded", timeout: NAV_TIMEOUT },
-      { waitUntil: "load", timeout: NAV_TIMEOUT },
-      { waitUntil: "networkidle2", timeout: NAV_TIMEOUT },
-    ];
-    let lastErr;
-    for (const p of profiles) {
-      try {
-        await page.goto(target, p);
-        return;
-      } catch (err) {
-        lastErr = err;
-        if (!(err instanceof Error) || !/timeout/i.test(String(err.message))) {
-          throw err;
-        }
-      }
-    }
-    throw lastErr;
-  }
-
+  let browser = null;
   try {
-    await navigateWithRetries(page, target);
+    // Cek apakah kita berada di lingkungan Vercel
+    const isProduction = !!process.env.VERCEL;
 
-    const knownSelectors = getKnownSelectors(u.host);
-    const genericSelectors = [
-      "article",
-      "main",
-      "[role='main']",
-      ".content",
-      "#content",
-      ".jobsearch-JobComponent",
-    ];
-    const selectors = [...knownSelectors, ...genericSelectors];
+    let launchOptions = {
+      ignoreHTTPSErrors: true,
+    };
 
-    // Tunggu salah satu selector muncul (kalau ada)
-    if (selectors.length) {
+    if (isProduction) {
+      // Konfigurasi untuk Vercel (Produksi)
+      launchOptions.args = chromium.args;
+      launchOptions.defaultViewport = chromium.defaultViewport;
+      launchOptions.executablePath = await chromium.executablePath();
+      launchOptions.headless = chromium.headless;
+    } else {
+      // Konfigurasi untuk Lokal (Development)
+      // Secara eksplisit beritahu puppeteer-core di mana menemukan browser
+      launchOptions.executablePath = executablePath();
+    }
+
+    browser = await puppeteer.launch(launchOptions);
+    const page = await browser.newPage();
+    await page.goto(url, {
+      waitUntil: "domcontentloaded", // Lebih andal untuk situs kompleks
+      timeout: 60000, // Naikkan timeout menjadi 60 detik
+    });
+
+    const hostname = new URL(url).hostname;
+    const config = siteConfigs[hostname];
+
+    let result = {
+      url,
+      source: hostname,
+      title: null,
+      company: null,
+      description: null,
+      descriptionHtml: null,
+      usedSelector: null,
+    };
+    
+    // Fungsi helper untuk mengekstrak teks dari selector
+    const getText = async (selector) => {
       try {
-        await page.waitForSelector(selectors.join(", "), {
-          timeout: WAIT_SELECTOR_TIMEOUT,
-        });
+        return await page.$eval(selector, (el) => el.textContent.trim());
       } catch {
-        // lanjut saja, evaluator fallback akan mencoba gabungan paragraf
+        return null;
+      }
+    };
+
+    if (config) {
+      // Gunakan konfigurasi spesifik jika ada
+      result.title = await getText(config.title);
+      result.company = await getText(config.company);
+      const descElement = await page.$(config.description);
+      if (descElement) {
+        result.description = await descElement.evaluate(el => el.innerText);
+        result.descriptionHtml = await descElement.evaluate(el => el.innerHTML);
+        result.usedSelector = config.description;
+      }
+    }
+    
+    // Fallback jika metode spesifik gagal atau tidak ada
+    if (!result.title) result.title = await page.title();
+    if (!result.description) {
+      for (const selector of genericDescriptionSelectors) {
+        const element = await page.$(selector);
+        if (element) {
+          result.description = await element.evaluate((el) => el.innerText);
+          result.descriptionHtml = await element.evaluate((el) => el.innerHTML);
+          result.usedSelector = selector;
+          break; // Hentikan loop jika selector ditemukan
+        }
       }
     }
 
-    // Sedikit delay agar konten SPA merender
-    await sleep(800);
-
-    const data = await page.evaluate((selectors) => {
-      function pickText(el) {
-        if (!el) return null;
-        const t = el.innerText?.trim() || "";
-        const html = el.innerHTML || "";
-        return { text: t, html };
-      }
-
-      const title =
-        document.querySelector("h1")?.innerText?.trim() ||
-        document
-          .querySelector("[class*='JobInfoHeader-title'] span")
-          ?.textContent?.trim() ||
-        document.title?.trim() ||
-        null;
-
-      const company =
-        document
-          .querySelector(
-            "[data-company], .company, .topcard__org-name-link, [class*='AboutCompanySectionsc__Title'], [class*='company-name'], [data-automation*='advertiser-name']"
-          )
-          ?.textContent?.trim() ||
-        document
-          .querySelector("a[href*='company'], a[href*='companies']")
-          ?.textContent?.trim() ||
-        null;
-
-      let found = null;
-      for (const sel of selectors) {
-        const el = document.querySelector(sel);
-        const picked = pickText(el);
-        if (picked && picked.text && picked.text.length > 120) {
-          found = { selector: sel, ...picked };
-          break;
-        }
-      }
-
-      if (!found) {
-        const paras = Array.from(document.querySelectorAll("p, li"))
-          .map((n) => n.textContent?.trim() || "")
-          .filter(Boolean)
-          .join("\n");
-        if (paras.length > 120) {
-          found = { selector: "fallback:p,li", text: paras, html: "" };
-        }
-      }
-
-      return {
-        title,
-        company,
-        description: found?.text || null,
-        descriptionHtml: found?.html || null,
-        usedSelector: found?.selector || null,
-      };
-    }, selectors);
-
-    return {
-      url: target,
-      source: u.host,
-      ...data,
-    };
+    return result;
+  } catch (error) {
+    console.error(`Error scraping ${url}:`, error);
+    throw new Error(`Failed to scrape job from ${url}. Reason: ${error.message}`);
   } finally {
-    await browser.close();
+    if (browser) await browser.close();
   }
 }
