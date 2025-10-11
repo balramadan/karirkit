@@ -21,6 +21,7 @@
                 name="email"
                 type="email"
                 class="!w-full !text-sm focus:!border-blue-700"
+                disabled
               />
             </div>
             <div class="flex flex-col gap-2">
@@ -89,16 +90,16 @@ import { Icon } from "@iconify/vue";
 import { useToast } from "primevue/usetoast";
 import { uploadAvatar } from "@/lib/storage";
 import { api } from "@/lib/axios";
-import { getInitials } from "@/composables/text"
+import { getInitials } from "@/composables/text";
 import type { FileUploadSelectEvent } from "primevue/fileupload";
-import { useAuthStore } from "@/stores/auth"
+import { useAuthStore } from "@/stores/auth";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import Avatar from "primevue/avatar";
 import FileUpload from "primevue/fileupload";
 
 const toast = useToast();
-const authStore = useAuthStore()
+const authStore = useAuthStore();
 
 const props = defineProps({
   data: {
@@ -107,7 +108,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['profileUpdated']);
+const emit = defineEmits(["profileUpdated"]);
 
 const name = ref(props.data?.data.name);
 const email = ref(props.data?.data.email);
@@ -115,7 +116,7 @@ const selectedAvatarFile = ref<File | null>(null);
 const avatarPreviewUrl = ref<string | null>(null);
 const isLoading = ref(false);
 
-const initial = getInitials(name.value)
+const initial = getInitials(name.value);
 
 const onFileSelect = (event: FileUploadSelectEvent) => {
   const file = event.files[0];
@@ -154,7 +155,7 @@ const changeProfile = async () => {
     authStore.setUser(null, null, data.name, data.photoUrl);
 
     // Beri tahu parent component untuk memuat ulang data
-    emit('profileUpdated');
+    emit("profileUpdated");
   } catch (error: any) {
     console.error("Failed to update profile:", error);
     toast.add({

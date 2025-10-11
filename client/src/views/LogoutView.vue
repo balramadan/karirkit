@@ -11,7 +11,7 @@ const router = useRouter();
 
 onMounted(() => {
   authStore.clearUser();
-  router.push("/login");
+  router.push("/");
 });
 </script>
 <style lang=""></style>

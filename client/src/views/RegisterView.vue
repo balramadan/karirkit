@@ -6,7 +6,9 @@
       <h3 class="font-bold text-2xl">Sign up for free</h3>
       <p class="text-sm text-black/60 dark:text-white/60">
         Already have an account?
-        <RouterLink to="/login" class="text-blue-600 dark:text-blue-500">Sign in here</RouterLink>
+        <RouterLink to="/login" class="text-blue-600 dark:text-blue-500"
+          >Sign in here</RouterLink
+        >
       </p>
       <Form
         v-slot="$form"
@@ -101,10 +103,6 @@
           type="submit"
         />
       </Form>
-
-      <!-- <Divider class="!text-sm !my-0" align="center" type="solid">
-        <b>SSO</b>
-      </Divider> -->
     </div>
     <div class="hidden md:block md:col-span-6 lg:col-span-7">
       <Image
@@ -122,14 +120,14 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { Form } from "@primevue/forms";
+import { Icon } from "@iconify/vue";
+import { useToast } from "primevue/usetoast";
+import { useOtpStore } from "@/stores/otp";
 import InputText from "primevue/inputtext";
 import Password from "primevue/password";
 import Message from "primevue/message";
 import Button from "primevue/button";
-import Divider from "primevue/divider";
 import Image from "primevue/image";
-import { Icon } from "@iconify/vue";
-import { useToast } from "primevue/usetoast";
 import router from "@/router";
 
 interface inputType {
@@ -140,6 +138,7 @@ interface inputType {
 }
 
 const toast = useToast();
+const otpStore = useOtpStore();
 
 const initialValues = ref({
   name: "",
@@ -217,11 +216,13 @@ const submitSignUp = async (e: any) => {
     toast.add({
       severity: "success",
       summary: "Success",
-      detail: "Sign in success",
+      detail: "Check email for OTP verification",
       life: 3000,
     });
 
-    router.push("/login");
+    otpStore.forVerify(data.email, "register");
+
+    router.push("/verify");
   } catch (err: any) {
     toast.add({
       severity: "error",

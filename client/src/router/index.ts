@@ -9,8 +9,8 @@ const router = createRouter({
       name: "home",
       component: () => import("@/views/LandingPageView.vue"),
       meta: {
-        title: "KarirKit"
-      }
+        title: "KarirKit",
+      },
     },
     {
       path: "/dashboard",
@@ -28,6 +28,14 @@ const router = createRouter({
       meta: {
         title: "Sign up | KarirKit",
       },
+    },
+    {
+      path: "/verify",
+      name: "verify",
+      component: () => import("@/views/VerifyOtpView.vue"),
+      meta: {
+        title: "Verify OTP | KarirKit",
+      }
     },
     {
       path: "/login",
@@ -62,7 +70,7 @@ const router = createRouter({
       meta: {
         title: "Curriculum Vitae | KarirKit",
         requiresAuth: true,
-      }
+      },
     },
     {
       path: "/settings/cover-letter",
@@ -71,8 +79,8 @@ const router = createRouter({
       meta: {
         title: "Cover Letter | KarirKit",
         requiresAuth: true,
-      }
-    }
+      },
+    },
   ],
 });
 
