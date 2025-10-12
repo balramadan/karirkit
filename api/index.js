@@ -10,7 +10,7 @@ import storageRouter from "./routes/storage.js";
 import userRouter from "./routes/user.js";
 import groupRouter from "./routes/group.js";
 
-connectDB()
+connectDB();
 
 const app = express();
 // const port = 3000;
@@ -54,4 +54,4 @@ app.get("/", (req, res) => {
 //     process.exit(1);
 //   });
 
-export default app; 
+export default app;
