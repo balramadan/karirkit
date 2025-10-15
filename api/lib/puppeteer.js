@@ -22,14 +22,18 @@ const siteConfigs = {
   "glassdoor.com": {
     title: 'h1[aria-live="polite"]',
     company: 'h4[aria-live="polite"]',
-    description: '.jobDescriptionContent'
-  }
+    description: ".jobDescriptionContent",
+  },
   // Tambahkan situs lain di sini...
 };
 
 // Selector generik sebagai fallback
 const genericDescriptionSelectors = [
-  "#job-details", ".job-details", ".job-description", "#description", ".description",
+  "#job-details",
+  ".job-details",
+  ".job-description",
+  "#description",
+  ".description",
 ];
 
 export async function scrapeJob(url) {
@@ -73,30 +77,44 @@ export async function scrapeJob(url) {
       descriptionHtml: null,
       usedSelector: null,
     };
-    
+
     // Fungsi helper untuk mengekstrak teks dari selector
     const getText = async (selector) => {
-      try {
-        return await page.$eval(selector, (el) => el.textContent.trim());
-      } catch {
-        return null;
-      }
+      // Menggunakan page.$eval yang lebih ringkas dan aman
+      // Ini akan menunggu elemen muncul dan kemudian mengekstrak teks
+      return page
+        .$eval(selector, (el) => el.textContent.trim())
+        .catch(() => null);
     };
 
     if (config) {
       // Gunakan konfigurasi spesifik jika ada
       result.title = await getText(config.title);
       result.company = await getText(config.company);
-      const descElement = await page.$(config.description);
-      if (descElement) {
-        result.description = await descElement.evaluate(el => el.innerText);
-        result.descriptionHtml = await descElement.evaluate(el => el.innerHTML);
-        result.usedSelector = config.description;
+
+      try {
+        // Tunggu selector deskripsi muncul sebelum mengambil data
+        await page.waitForSelector(config.description, { timeout: 10000 });
+        const descElement = await page.$(config.description);
+        if (descElement) {
+          result.description = await descElement.evaluate((el) => el.innerText);
+          result.descriptionHtml = await descElement.evaluate(
+            (el) => el.innerHTML
+          );
+          result.usedSelector = config.description;
+        }
+      } catch (e) {
+        console.log(
+          `Description selector '${config.description}' not found for ${hostname}.`
+        );
       }
     }
-    
+
     // Fallback jika metode spesifik gagal atau tidak ada
-    if (!result.title) result.title = await page.title();
+    if (!result.title) {
+      // Mengambil judul dari tag <title> sebagai fallback yang lebih baik
+      result.title = await page.title();
+    }
     if (!result.description) {
       for (const selector of genericDescriptionSelectors) {
         const element = await page.$(selector);
@@ -112,7 +130,9 @@ export async function scrapeJob(url) {
     return result;
   } catch (error) {
     console.error(`Error scraping ${url}:`, error);
-    throw new Error(`Failed to scrape job from ${url}. Reason: ${error.message}`);
+    throw new Error(
+      `Failed to scrape job from ${url}. Reason: ${error.message}`
+    );
   } finally {
     if (browser) await browser.close();
   }
