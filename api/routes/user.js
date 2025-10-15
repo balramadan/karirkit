@@ -72,16 +72,19 @@ userRouter.post(
 
       const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-      const newOtpEntry = new Otp({
-        email: existingUser.email,
-        otp,
-        userData: {
-          name: existingUser.name,
-          password: existingUser.password,
+      // Gunakan findOneAndUpdate dengan upsert untuk menghindari error duplikat
+      // Ini akan membuat entri baru jika tidak ada, atau memperbarui yang sudah ada.
+      await Otp.findOneAndUpdate(
+        { email: existingUser.email },
+        {
+          $set: {
+            otp: otp,
+            createdAt: new Date(), // Reset waktu kedaluwarsa
+            // Tidak perlu menyimpan userData untuk ganti password
+          },
         },
-      });
-
-      await newOtpEntry.save();
+        { upsert: true, new: true, setDefaultsOnInsert: true }
+      );
 
       await sendVerificationChangePassword(existingUser.email, otp);
 

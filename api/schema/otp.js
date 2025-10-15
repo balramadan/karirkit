@@ -5,8 +5,8 @@ const otpSchema = new Schema({
   otp: { type: String, required: true },
   // Data pendaftaran yang akan disimpan sementara
   userData: {
-    name: { type: String, required: true },
-    password: { type: String, required: true }, // Ini adalah password yang sudah di-hash
+    name: { type: String, required: false },
+    password: { type: String, required: false }, // Ini adalah password yang sudah di-hash
   },
   createdAt: {
     type: Date,
