@@ -3,6 +3,18 @@
     <div
       class="flex flex-col gap-4 justify-center items-start px-5 md:px-20 py-5 col-span-1 w-full md:col-span-6 lg:col-span-5"
     >
+      <Image
+        src="/KarirKit-light.png"
+        class="flex mx-auto light:block dark:hidden"
+        width="48"
+        alt="Logo"
+      />
+      <Image
+        src="/KarirKit-dark.png"
+        class="flex mx-auto light:hidden dark:block"
+        width="48"
+        alt="Logo"
+      />
       <h3 class="font-bold text-2xl">Sign up for free</h3>
       <p class="text-sm text-black/60 dark:text-white/60">
         Already have an account?
@@ -97,6 +109,16 @@
             >{{ $form.confirmPassword?.error.message }}</Message
           >
         </div>
+        <p class="mt-5 text-sm">
+          By signing up, you agree to our
+          <RouterLink to="/terms" class="text-blue-600 dark:text-blue-500"
+            >Terms of Service</RouterLink
+          >
+          and
+          <RouterLink to="/privacy" class="text-blue-600 dark:text-blue-500"
+            >Privacy Policy</RouterLink
+          >.
+        </p>
         <Button
           class="mt-8 !text-sm w-full !bg-blue-600 dark:!bg-blue-500 !border-none !transition-all !duration-300 !ease-in-out dark:!text-white hover:!bg-blue-800 hover:dark:!bg-blue-700"
           label="Sign up"
@@ -116,6 +138,7 @@
       >
     </div>
   </div>
+  <SwitchMode class="hidden" />
 </template>
 <script setup lang="ts">
 import { ref } from "vue";
@@ -124,6 +147,7 @@ import { Icon } from "@iconify/vue";
 import { useToast } from "primevue/usetoast";
 import { useOtpStore } from "@/stores/otp";
 import InputText from "primevue/inputtext";
+import SwitchMode from "@/components/SwitchMode.vue";
 import Password from "primevue/password";
 import Message from "primevue/message";
 import Button from "primevue/button";

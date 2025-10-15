@@ -135,7 +135,7 @@ userRouter.patch(
       const { newPassword } = req.body;
 
       const user = await Users.findById(userId);
-      const hashNewPassword = bcrypt.hash(newPassword, 10);
+      const hashNewPassword = await bcrypt.hash(newPassword, 10);
 
       user.password = hashNewPassword;
 

@@ -128,7 +128,7 @@
   <Dialog
     v-model:visible="addGroupDialog"
     header="Add New Group"
-    class="w-[25rem]"
+    class="w-[15rem]"
     closable
     draggable
     modal
@@ -152,7 +152,7 @@
   <Drawer v-model:visible="drawer">
     <template #container="{ closeCallback }">
       <div class="flex flex-col h-full gap-4">
-        <div class="flex items-center justify-between px-5 mt-4 shrink-0">
+        <div class="flex items-center justify-between px-4 mt-4 shrink-0">
           <span class="flex flex-row items-center gap-2">
             <Image
               src="/KarirKit-light.png"
@@ -179,22 +179,97 @@
               variant="outlined"
             >
               <template #icon>
-                <Icon icon="tdesign:close" />
+                <Icon icon="tdesign:close" class="size-5" />
               </template>
             </Button>
           </span>
         </div>
-        <div class="overflow-y-auto flex flex-col px-5"></div>
+        <div class="overflow-y-auto flex flex-col gap-3">
+          <RouterLink
+            v-for="(item, index) in itemsMobile"
+            :to="item.url"
+            class="flex items-center gap-3 px-5 py-3 group hover:bg-black/5"
+          >
+            <Icon
+              v-if="item.icon"
+              :icon="item.icon"
+              :class="[{ '!text-red-500': item.url === '/logout' }]"
+            />
+            <span :class="[{ 'text-red-500': item.url === '/logout' }]">{{
+              item.label
+            }}</span>
+          </RouterLink>
+          <Select
+            v-model="selectedGroup"
+            @change="changeGroup"
+            :options="groups"
+            option-label="name"
+            option-value="_id"
+            placeholder="Select Group"
+            size="small"
+            class="!mx-5 !border-blue-600 dark:!border-white !bg-transparent dark:!bg-darksecond"
+            showClear
+            :pt="{
+              label: {
+                class: '!text-blue-500 dark:!text-white',
+              },
+              option: {
+                class: 'aria-selected:!bg-blue-600/20 hover:!bg-blue-600/10',
+              },
+            }"
+          >
+            <template #option="slotProps">
+              <div :class="['!flex !items-center !justify-between !gap-2']">
+                <div>{{ slotProps.option.name }}</div>
+              </div>
+            </template>
+            <template #footer>
+              <div class="p-2.5">
+                <Button
+                  v-if="selectedGroup"
+                  label="Delete"
+                  severity="danger"
+                  variant="text"
+                  size="small"
+                  fluid
+                  @click="deleteGroup()"
+                ></Button>
+                <Button
+                  label="Add New"
+                  severity="secondary"
+                  variant="text"
+                  size="small"
+                  fluid
+                  @click="addGroupDialog = true"
+                >
+                  <template #icon>
+                    <Icon icon="tdesign:folder-add-1" />
+                  </template>
+                </Button>
+              </div>
+            </template>
+          </Select>
+        </div>
         <div class="mt-auto">
           <hr
             class="mb-4 mx-4 border-t border-0 border-surface-200 dark:border-surface-700"
           />
-          <a
-            class="m-4 flex items-center cursor-pointer p-4 gap-2 rounded text-surface-700 hover:bg-surface-100 dark:text-surface-0 dark:hover:bg-surface-800 duration-150 transition-colors p-ripple"
-          >
-            <Avatar image="/images/avatar/amyelsner.png" shape="circle" />
-            <span class="font-bold">Amy Elsner</span>
-          </a>
+          <div class="flex flex-row justify-between items-center p-5">
+            <RouterLink
+              to="/settings#profile"
+              class="flex items-center cursor-pointer gap-2 rounded text-surface-700 hover:bg-surface-100 dark:text-surface-0 dark:hover:bg-surface-800 duration-150 transition-colors p-ripple"
+            >
+              <Avatar
+                v-if="props.dataUser?.photoUrl"
+                :image="props.dataUser?.photoUrl"
+                class="!size-9"
+                shape="circle"
+              />
+              <Avatar v-else :label="initial" class="!size-9" shape="circle" />
+              <p class="px-1 font-bold">{{ props.dataUser?.name }}</p>
+            </RouterLink>
+            <SwitchMode />
+          </div>
         </div>
       </div>
     </template>
@@ -236,6 +311,23 @@ const selectedGroup = ref();
 const groups = ref();
 const addGroupDialog = ref(false);
 const items = ref([
+  {
+    label: "Settings",
+    icon: "tdesign:setting",
+    url: "/settings#profile",
+  },
+  {
+    label: "Logout",
+    icon: "tdesign:logout",
+    url: "/logout",
+  },
+]);
+const itemsMobile = ref([
+  {
+    label: "Dashboard",
+    icon: "tdesign:dashboard-1-filled",
+    url: "/dashboard",
+  },
   {
     label: "Settings",
     icon: "tdesign:setting",
@@ -303,7 +395,7 @@ const deleteGroup = () => {
             life: 3000,
           });
 
-          getGroups()
+          getGroups();
         }
       } catch (error) {
         toast.add({
@@ -348,7 +440,7 @@ const addGroup = async (e: any) => {
       detail: response.data?.message,
       life: 3000,
     });
-    addGroupDialog.value = false
+    addGroupDialog.value = false;
   } catch (err) {
     console.error(err);
   }

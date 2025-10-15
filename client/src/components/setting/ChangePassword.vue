@@ -16,6 +16,7 @@
             <Form
               v-slot="$form"
               class="w-full"
+              @submit="submitChangePassword"
               :initialValues
               :resolver="resolver"
             >

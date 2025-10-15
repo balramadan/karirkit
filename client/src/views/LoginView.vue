@@ -3,6 +3,18 @@
     <div
       class="flex flex-col gap-4 justify-center items-start px-5 md:px-20 py-5 col-span-1 w-full md:col-span-6 lg:col-span-5"
     >
+      <Image
+        src="/KarirKit-light.png"
+        class="flex mx-auto light:block dark:hidden"
+        width="48"
+        alt="Logo"
+      />
+      <Image
+        src="/KarirKit-dark.png"
+        class="flex mx-auto light:hidden dark:block"
+        width="48"
+        alt="Logo"
+      />
       <h3 class="font-bold text-2xl">Sign in to your account</h3>
       <p class="text-sm text-black/60 dark:text-white/60">
         Not a member?
@@ -81,6 +93,7 @@
       >
     </div>
   </div>
+  <SwitchMode class="hidden" />
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
@@ -89,6 +102,7 @@ import { Icon } from "@iconify/vue";
 import { useToast } from "primevue/usetoast";
 import { useAuthStore } from "@/stores/auth";
 import InputText from "primevue/inputtext";
+import SwitchMode from "@/components/SwitchMode.vue";
 import Password from "primevue/password";
 import Message from "primevue/message";
 import Button from "primevue/button";

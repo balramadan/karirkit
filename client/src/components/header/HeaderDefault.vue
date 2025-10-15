@@ -40,13 +40,13 @@
       <div v-else class="flex gap-2.5 items-center">
         <RouterLink to="/login">
           <Button
-            class="!text-blue-600/60 dark:!text-white/60 !py-1.5 !px-5 !bg-transparent !border !border-blue-600/60 dark:!border-white/60 hover:!text-blue-800 hover:dark:!text-white hover:!border-blue-800 hover:dark:!border-white !transition-all !duration-300 !ease-in-out"
+            class="!text-sm md:!text-base !text-blue-600/60 dark:!text-white/60 !py-1.5 !px-5 !bg-transparent !border !border-blue-600/60 dark:!border-white/60 hover:!text-blue-800 hover:dark:!text-white hover:!border-blue-800 hover:dark:!border-white !transition-all !duration-300 !ease-in-out"
             label="Sign in"
           />
         </RouterLink>
         <RouterLink to="/register">
           <Button
-            class="!text-white-600 dark:!text-blue-700 !py-1.8 !px-5 !border-none !bg-blue-600 dark:!bg-white hover:!text-white hover:dark:!text-white hover:!bg-blue-900 hover:dark:!bg-blue-900 !transition-all !duration-300 !ease-in-out"
+            class="!text-sm md:!text-base !text-white-600 dark:!text-blue-700 !py-1.8 !px-5 !border-none !bg-blue-600 dark:!bg-white hover:!text-white hover:dark:!text-white hover:!bg-blue-900 hover:dark:!bg-blue-900 !transition-all !duration-300 !ease-in-out"
             label="Sign up"
           />
         </RouterLink>
