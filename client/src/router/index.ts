@@ -17,7 +17,7 @@ const router = createRouter({
       name: "kanban",
       component: () => import("@/views/KanbanView.vue"),
       meta: {
-        title: "Kanban | KarirKit",
+        title: "Dashboard | KarirKit",
         requiresAuth: true,
       },
     },
@@ -35,7 +35,7 @@ const router = createRouter({
       component: () => import("@/views/VerifyOtpView.vue"),
       meta: {
         title: "Verify OTP | KarirKit",
-      }
+      },
     },
     {
       path: "/login",
@@ -78,6 +78,15 @@ const router = createRouter({
       component: () => import("@/components/setting/CoverLetter.vue"),
       meta: {
         title: "Cover Letter | KarirKit",
+        requiresAuth: true,
+      },
+    },
+    {
+      path: "/settings/change-password",
+      name: "changePassword",
+      component: () => import("@/components/setting/ChangePassword.vue"),
+      meta: {
+        title: "Change Password | KarirKit",
         requiresAuth: true,
       },
     },

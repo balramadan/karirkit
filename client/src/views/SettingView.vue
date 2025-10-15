@@ -24,7 +24,7 @@
 import { ref, onMounted, computed, watch } from "vue";
 import { useRoute } from "vue-router";
 import { api } from "@/lib/axios";
-import Skeleton from 'primevue/skeleton';
+import Skeleton from "primevue/skeleton";
 import DashboardLayout from "@/layouts/DashboardLayout.vue";
 import Settings from "@/components/menu/Settings.vue";
 import Profile from "@/components/setting/Profile.vue";

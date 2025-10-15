@@ -31,13 +31,14 @@
                 class="w-35 !text-xs !bg-blue-700 !border-none !transition-all !duration-300 !ease-in-out hover:!bg-blue-900 dark:!text-white"
                 label="Change Password"
                 type="button"
+                @click="changePassword"
               />
             </div>
             <div class="text-right">
               <Button
                 class="w-40 !text-sm !bg-blue-700 !border-none !transition-all !duration-300 !ease-in-out hover:!bg-blue-900 dark:!text-white"
-                :label="isLoading ? 'Saving...' : 'Save Profile'"
                 type="submit"
+                :label="isLoading ? 'Saving...' : 'Save Profile'"
                 :disabled="isLoading"
               />
             </div>
@@ -93,13 +94,17 @@ import { api } from "@/lib/axios";
 import { getInitials } from "@/composables/text";
 import type { FileUploadSelectEvent } from "primevue/fileupload";
 import { useAuthStore } from "@/stores/auth";
+import { useOtpStore } from "@/stores/otp";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
 import Avatar from "primevue/avatar";
 import FileUpload from "primevue/fileupload";
+import router from "@/router";
 
 const toast = useToast();
 const authStore = useAuthStore();
+const otpStore = useOtpStore();
+const loadingChangePassword = ref(false);
 
 const props = defineProps({
   data: {
@@ -166,6 +171,37 @@ const changeProfile = async () => {
     });
   } finally {
     isLoading.value = false;
+  }
+};
+
+const changePassword = async () => {
+  try {
+    loadingChangePassword.value = true;
+
+    const { data } = await api.post("/user/send-verification");
+
+    if (!data) {
+      toast.add({
+        summary: "Error",
+        detail: `${data.message}}`,
+        severity: "error",
+        life: 3000,
+      });
+      return;
+    }
+
+    toast.add({
+      summary: "Success",
+      detail: `${data.message}`,
+      severity: "success",
+      life: 3000,
+    });
+
+    otpStore.forVerify(data.email, "change-password");
+
+    router.push("/verify");
+  } catch (error) {
+    console.error("Failed to change password:", error);
   }
 };
 </script>

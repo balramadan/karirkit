@@ -1,13 +1,15 @@
 <template>
   <ConfirmDialog></ConfirmDialog>
   <div class="flex flex-col gap-4 py-5 rounded-xl h-[80vh] max-h-full">
-    <div class="flex items-center justify-between">
-      <h2 class="text-lg font-semibold text-black dark:text-white">
+    <div
+      class="flex flex-col sm:flex-row sm:items-center justify-between gap-2"
+    >
+      <h2 class="md:text-lg font-semibold text-black dark:text-white">
         Job Application
       </h2>
       <div class="flex items-center gap-2">
         <button
-          class="rounded-md bg-blue-600 px-3 py-2 text-white cursor-pointer transition-all duration-300 hover:bg-blue-700 dark:bg-blue-400 dark:hover:bg-blue-500 disabled:opacity-60"
+          class="text-sm md:text-base rounded-md bg-blue-600 px-3 py-2 text-white cursor-pointer transition-all duration-300 hover:bg-blue-700 dark:bg-blue-400 dark:hover:bg-blue-500 disabled:opacity-60"
           @click="openAddDialog"
           :disabled="creating"
           title="Add"
@@ -16,7 +18,7 @@
         </button>
         <Icon
           icon="hugeicons:refresh"
-          class="rounded-md size-10 bg-transparent px-3 py-2 text-black cursor-pointer border border-solid transition-all duration-300 hover:bg-black/5 dark:bg-white/80 dark:text-black dark:border-white dark:hover:text-black dark:hover:bg-white disabled:opacity-60"
+          class="rounded-md size-9 md:size-10 bg-transparent px-3 py-2 text-black cursor-pointer border border-solid transition-all duration-300 hover:bg-black/5 dark:bg-white/80 dark:text-black dark:border-white dark:hover:text-black dark:hover:bg-white disabled:opacity-60"
           @click="refresh"
           :disabled="loading"
         />
@@ -72,7 +74,7 @@
                 {{ element.companyName }}
               </div>
               <div
-                class="hidden group-hover:flex mt-2 items-center justify-between"
+                class="flex md:hidden group-hover:flex mt-2 items-center justify-between"
               >
                 <a
                   v-if="element.jobUrl"
@@ -126,7 +128,7 @@
             label="Fetch Details"
             size="small"
             :loading="fetchLoading"
-            class="!text-sm !text-white !bg-blue-700 transition-all duration-300 hover:!bg-blue-800 dark:!border-white dark:!bg-[#1a1a1a] dark:hover:!bg-white/10 px-2 py-2 w-50"
+            class="!text-sm !text-white !bg-blue-500 transition-all duration-300 hover:!bg-blue-700 light:!border-none dark:!border-white dark:!bg-[#1a1a1a] dark:hover:!bg-white/10 px-2 py-2 w-50"
             @click="fetchDetailsFromUrl(addForm.jobUrl)"
           />
         </div>
@@ -610,7 +612,7 @@ async function onDelete(id: string, s: Status) {
         alert("Failed to delete application. Please try again.");
       }
     },
-    reject: () => {}
+    reject: () => {},
   });
 }
 
@@ -656,5 +658,4 @@ watch(activeGroup, () => {
 #container-kanban::-webkit-scrollbar-thumb:hover {
   background-color: #a8a8a8;
 }
-
 </style>

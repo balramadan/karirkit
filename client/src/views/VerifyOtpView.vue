@@ -1,94 +1,46 @@
 <template>
   <div class="flex flex-col justify-center items-center min-h-screen">
+    <Image src="" />
     <div class="mb-4">
       <h2 class="text-center text-2xl font-bold mb-2">Verify OTP</h2>
       <p class="text-center text-gray-600">Enter the OTP sent to your email</p>
     </div>
-    <Form
-      v-slot="$form"
-      :initialValues
-      :resolver="resolver"
-      @submit="onSubmit"
-      class=""
-    >
-      <div class="flex flex-col gap-4">
-        <Message
-          v-if="$form.otp?.invalid"
-          class="!text-xs !text-center"
-          severity="error"
-          size="small"
-          >{{ $form.otp?.error.message }}</Message
-        >
-        <InputOtp
-          v-model="otp"
-          id="otp"
-          name="otp"
-          placeholder="Enter OTP"
-          input-class="w-full p-3 border border-gray-300 rounded"
-          type="numeric"
-          required
-          :class="{ 'p-invalid': $form.otp?.invalid }"
-          :length="6"
-        />
-      </div>
-      <Button
-        type="submit"
-        label="Verify OTP"
-        class="mt-5 !text-sm w-full !bg-blue-600 dark:!bg-blue-500 !border-none !transition-all !duration-300 !ease-in-out dark:!text-white hover:!bg-blue-800 hover:dark:!bg-blue-700"
+    <div class="">
+      <OtpForm
+        v-if="reason == 'register'"
+        @verify="onSubmitRegister"
+        @resend="resendRegisterOtp"
+        :email="email || ''"
+        :reason="reason || ''"
       />
-    </Form>
-    <div class="text-center mt-5">
-      <p class="text-gray-600">
-        Didn't receive the OTP?
-        <span v-if="otpStore.countdown > 0" class="text-sm text-gray-500">
-          (Resend in {{ otpStore.countdown }}s)</span
-        >
-        <a
-          v-if="otpStore.countdown === 0"
-          @click="resendOtp"
-          class="text-blue-500 cursor-pointer transition-all duration-300 hover:underline"
-          >Resend OTP</a
-        >
-      </p>
+      <OtpForm
+        v-if="reason == 'change-password'"
+        @verify="onSubmitChangePassword"
+        @resend="resendChangePasswordOtp"
+        :email="email || ''"
+        :reason="reason || ''"
+      />
     </div>
   </div>
 </template>
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import { Form } from "@primevue/forms";
 import { useToast } from "primevue/usetoast";
 import { useOtpStore } from "@/stores/otp";
-import InputOtp from "primevue/inputotp";
-import Button from "primevue/button";
-import Message from "primevue/message";
+import { api } from "@/lib/axios";
+import Image from "primevue/image";
+import OtpForm from "@/components/OtpForm.vue";
 import router from "@/router";
 
 const toast = useToast();
 const otpStore = useOtpStore();
 const email = otpStore.email;
-const otp = ref();
+const reason = otpStore.reason;
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
 interface inputType {
   otp: string;
 }
-
-const initialValues = ref({
-  otp: "",
-});
-
-const resolver = ({ values }: { values: inputType | Record<string, any> }) => {
-  const errors = {
-    otp: <object>[],
-  };
-
-  if (!values.otp) {
-    errors.otp = [{ message: "OTP is required" }];
-  }
-
-  return {
-    errors,
-  };
-};
 
 const resendCountdown = () => {
   otpStore.countdown = 120;
@@ -101,11 +53,8 @@ const resendCountdown = () => {
   }, 1000);
 };
 
-const onSubmit = async (e: any) => {
+const onSubmitRegister = async (e: any, otp: any) => {
   try {
-    const baseUrl = import.meta.env.VITE_API_BASE_URL;
-    console.log(e);
-
     // Simulate API call
     const response = await fetch(`${baseUrl}/auth/verify-otp`, {
       method: "POST",
@@ -114,7 +63,7 @@ const onSubmit = async (e: any) => {
       },
       body: JSON.stringify({
         email: email,
-        otp: otp.value,
+        otp,
       }),
     });
 
@@ -149,10 +98,8 @@ const onSubmit = async (e: any) => {
   }
 };
 
-const resendOtp = async () => {
+const resendRegisterOtp = async () => {
   try {
-    const baseUrl = import.meta.env.VITE_API_BASE_URL;
-
     const response = await fetch(`${baseUrl}/auth/resend-otp`, {
       method: "POST",
       headers: {
@@ -194,12 +141,83 @@ const resendOtp = async () => {
   }
 };
 
+const onSubmitChangePassword = async (e: any, otp: any) => {
+  try {
+    const response = await api.post("/user/verify-otp", {
+      email: email,
+      otp,
+    });
+
+    if (response.status !== 200) {
+      toast.add({
+        severity: "error",
+        summary: "Failed",
+        detail: `${response.data?.message || "Failed to verify OTP."}`,
+        life: 3000,
+      });
+
+      return;
+    }
+
+    toast.add({
+      severity: "success",
+      summary: "Success",
+      detail: `${response.data.message}`,
+      life: 3000,
+    });
+
+    router.push("/settings/change-password");
+  } catch (error) {
+    toast.add({
+      severity: "error",
+      summary: "Error",
+      detail: "Failed to send otp, try again!",
+      life: 3000,
+    });
+  }
+};
+
+const resendChangePasswordOtp = async () => {
+  try {
+    const response = await api.post("/user/resend-otp", {
+      email: email,
+    });
+
+    if (response.status != 200) {
+      toast.add({
+        severity: "error",
+        summary: "Failed",
+        detail: `${response.data?.message}`,
+        life: 3000,
+      });
+
+      return;
+    }
+
+    toast.add({
+      severity: "success",
+      summary: "Success",
+      detail: `OTP resend to ${email}!`,
+      life: 3000,
+    });
+
+    resendCountdown();
+  } catch (error) {
+    toast.add({
+      severity: "error",
+      summary: "Error",
+      detail: `${(error as Error).message}`,
+      life: 3000,
+    });
+  }
+};
+
 onMounted(() => {
   if (!email) {
     toast.add({
       severity: "error",
       summary: "Error",
-      detail: "No email found for OTP verification. Please register first.",
+      detail: "No email found for OTP verification. Please try again!.",
       life: 3000,
     });
     router.push("/register");
