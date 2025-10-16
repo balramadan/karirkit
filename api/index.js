@@ -16,7 +16,7 @@ const app = express();
 // const port = 3000;
 
 // Daftar origin yang diizinkan
-const allowedOrigins = ["http://localhost:5173", "https://karirkit.vercel.app"];
+const allowedOrigins = ["http://localhost:5173", "https://karirkit.pages.dev"];
 
 // Middleware
 app.use(
