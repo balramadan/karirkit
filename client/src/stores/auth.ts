@@ -9,6 +9,7 @@ export const useAuthStore = defineStore(
     const nameUser = ref<string | null>(null);
     const photoUrlUser = ref<string | null>(null);
     const token = ref<string | null>(null);
+    const authWith = ref<string | null>(null);
     const isAuthenticated = computed(() => !!token.value);
 
     /**
@@ -29,13 +30,17 @@ export const useAuthStore = defineStore(
       id: string | null,
       newToken: string | null,
       name: string | null,
-      photoUrl: string | null
+      photoUrl: string | null,
+      auth: string | null
     ) {
       if (id) {
         idUser.value = id;
       }
       if (newToken) {
         token.value = newToken;
+      }
+      if (auth) {
+        authWith.value = auth;
       }
       nameUser.value = name;
       photoUrlUser.value = photoUrl;
@@ -82,6 +87,7 @@ export const useAuthStore = defineStore(
       nameUser,
       photoUrlUser,
       token,
+      authWith,
       isAuthenticated,
       setUser,
       getUser,

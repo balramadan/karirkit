@@ -5,13 +5,11 @@
         <div class="md:col-span-3 lg:col-span-2">
           <Settings />
         </div>
-        <div v-if="isLoading" class="md:col-span-9 lg:col-span-10">
-          <Skeleton width="w-full" height="20rem" class="ml-5" />
-        </div>
-        <div v-else class="md:col-span-9 lg:col-span-10">
+        <div class="md:col-span-9 lg:col-span-10">
           <Profile
             v-if="activeTab === 'profile' && userData"
             :data="userData"
+            :is-loading="isLoading"
             @profile-updated="fetchUserData"
           />
           <Appearance v-if="activeTab === 'appearance'" />
@@ -24,7 +22,6 @@
 import { ref, onMounted, computed, watch } from "vue";
 import { useRoute } from "vue-router";
 import { api } from "@/lib/axios";
-import Skeleton from "primevue/skeleton";
 import DashboardLayout from "@/layouts/DashboardLayout.vue";
 import Settings from "@/components/menu/Settings.vue";
 import Profile from "@/components/setting/Profile.vue";

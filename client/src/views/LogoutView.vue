@@ -8,10 +8,15 @@ import { useRouter } from "vue-router";
 
 const authStore = useAuthStore();
 const router = useRouter();
+const baseurl = import.meta.env.VITE_API_BASE_URL;
 
 onMounted(() => {
   authStore.clearUser();
-  router.push("/");
+  if (authStore.authWith === "google") {
+    window.location.href = `${baseurl}/auth/logout`;
+  } else {
+    router.push("/login");
+  }
 });
 </script>
 <style lang=""></style>

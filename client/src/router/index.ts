@@ -46,6 +46,14 @@ const router = createRouter({
       },
     },
     {
+      path: "/auth/callback",
+      name: "auth-callback",
+      component: () => import("@/views/AuthCallbackView.vue"),
+      meta: {
+        title: "Auth Callback | KarirKit",
+      },
+    },
+    {
       path: "/logout",
       name: "logout",
       component: () => import("@/views/LogoutView.vue"),
@@ -106,11 +114,14 @@ const router = createRouter({
         title: "Privacy Policy | KarirKit",
       },
     },
-    // {
-    //   path: "/:pathMatch(.*)*",
-    //   name: "NotFound",
-    //   component: () => import"
-    // }
+    {
+      path: "/:pathMatch(.*)*",
+      name: "NotFound",
+      component: () => import("@/views/NotFoundView.vue"),
+      meta: {
+        title: "Not Found | KarirKit",
+      },
+    },
   ],
 });
 

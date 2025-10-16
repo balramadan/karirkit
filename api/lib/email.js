@@ -1,5 +1,27 @@
 import nodemailer from "nodemailer";
 
+// Validasi variabel lingkungan yang penting untuk email
+const requiredEnvVars = [
+  "EMAIL_HOST",
+  "EMAIL_PORT",
+  "EMAIL_USER",
+  "EMAIL_PASS",
+  "SENDER_EMAIL",
+];
+const missingEnvVars = requiredEnvVars.filter(
+  (varName) => !process.env[varName]
+);
+
+if (missingEnvVars.length > 0) {
+  // Ini akan menghentikan server saat start jika env vars tidak ada,
+  // yang bagus untuk debugging di awal.
+  console.warn(
+    `WARNING: Missing required email environment variables: ${missingEnvVars.join(
+      ", "
+    )}. Email functionality will be disabled.`
+  );
+}
+
 // Konfigurasi transporter menggunakan variabel lingkungan
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
@@ -11,12 +33,27 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// Fungsi helper untuk memeriksa konfigurasi sebelum mengirim
+const checkEmailConfig = () => {
+  if (missingEnvVars.length > 0) {
+    // Lemparkan error yang jelas jika fungsi email dipanggil tanpa konfigurasi
+    throw new Error(
+      `Email configuration is incomplete. Missing environment variables: ${missingEnvVars.join(
+        ", "
+      )}`
+    );
+  }
+};
+
 /**
  * Mengirim email verifikasi OTP
  * @param {string} to - Alamat email penerima
  * @param {string} otp - Kode OTP yang akan dikirim
  */
 export const sendVerificationEmail = async (to, otp) => {
+  // Periksa konfigurasi sebelum mencoba mengirim
+  checkEmailConfig();
+
   const mailOptions = {
     from: {
       name: "KarirKit",
@@ -33,6 +70,9 @@ export const sendVerificationEmail = async (to, otp) => {
 };
 
 export const sendVerificationChangePassword = async (to, otp) => {
+  // Periksa konfigurasi sebelum mencoba mengirim
+  checkEmailConfig();
+
   const mailOptions = {
     from: {
       name: "KarirKit",

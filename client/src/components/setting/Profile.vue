@@ -7,7 +7,9 @@
           <Form class="flex flex-col gap-4" @submit="changeProfile">
             <div class="flex flex-col gap-2">
               <label for="name" class="text-sm">Name</label>
+              <Skeleton v-if="isLoading" class="!w-full !h-10" />
               <InputText
+                v-else
                 v-model="name"
                 name="name"
                 type="text"
@@ -16,7 +18,9 @@
             </div>
             <div class="flex flex-col gap-2">
               <label for="email" class="text-sm">Email</label>
+              <Skeleton v-if="isLoading" class="!w-full !h-10" />
               <InputText
+                v-else
                 v-model="email"
                 name="email"
                 type="email"
@@ -24,7 +28,10 @@
                 disabled
               />
             </div>
-            <div class="flex flex-col gap-2">
+            <div
+              v-if="authStore.authWith === 'local'"
+              class="flex flex-col gap-2"
+            >
               <span>Password</span>
               <!-- TODO: Tambahkan fitur ganti password -->
               <Button
@@ -100,6 +107,7 @@ import Button from "primevue/button";
 import Avatar from "primevue/avatar";
 import FileUpload from "primevue/fileupload";
 import router from "@/router";
+import Skeleton from "primevue/skeleton";
 
 const toast = useToast();
 const authStore = useAuthStore();
@@ -110,6 +118,10 @@ const props = defineProps({
   data: {
     type: Object,
     required: true,
+  },
+  isLoading: {
+    type: Boolean,
+    default: false,
   },
 });
 
@@ -157,7 +169,7 @@ const changeProfile = async () => {
       life: 3000,
     });
 
-    authStore.setUser(null, null, data.name, data.photoUrl);
+    authStore.setUser(null, null, data.name, data.photoUrl, null);
 
     // Beri tahu parent component untuk memuat ulang data
     emit("profileUpdated");

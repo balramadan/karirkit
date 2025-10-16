@@ -15,7 +15,7 @@
     <div
       class="bg-blue-300 dark:bg-blue-900 text-sm flex flex-col sm:flex-row justify-center sm:justify-between items-center py-5 px-5 sm:px-6 lg:px-20 xl:px-40"
     >
-      <div class="mb-4 sm:mb-0">Iqbal Ramadan &copy; {{ year }}</div>
+      <div class="mb-4 sm:mb-0">Made with ❤️ for career fighters.</div>
       <div class="flex items-center gap-4">
         <a
           href="https://iqbalramadan.link/pay"
@@ -42,7 +42,6 @@
 import { ref } from "vue";
 import { Icon } from "@iconify/vue";
 
-const year = ref(new Date().getFullYear());
 const otherLinks = ref([
   {
     label: "Terms of Service",

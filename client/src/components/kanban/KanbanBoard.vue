@@ -31,12 +31,12 @@
     <div
       v-else-if="!error"
       id="container-kanban"
-      class="flex overflow-x-scroll overflow-auto h-full gap-4"
+      class="flex flex-col sm:flex-row overflow-x-scroll overflow-auto h-full gap-4"
     >
       <div
         v-for="s in statuses"
         :key="s"
-        class="min-w-64 w-64 h-fit shrink-0 border border-black/10 bg-blue-500/5 py-3 rounded-lg dark:border-white/10 dark:bg-darksecond select-none"
+        class="min-w-64 w-full sm:w-64 h-fit shrink-0 border border-black/10 bg-blue-500/5 py-3 rounded-lg dark:border-white/10 dark:bg-darksecond select-none"
       >
         <div
           class="mb-3 flex items-center justify-between border-b border-black/10 pb-2 px-3 dark:border-white/10"

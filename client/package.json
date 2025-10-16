@@ -22,6 +22,7 @@
     "@tailwindcss/vite": "^4.1.12",
     "@vueuse/core": "^13.7.0",
     "axios": "^1.11.0",
+    "jwt-decode": "^4.0.0",
     "pinia": "^3.0.3",
     "pinia-plugin-persistedstate": "^4.5.0",
     "primeicons": "^7.0.0",

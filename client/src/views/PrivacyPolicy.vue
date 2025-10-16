@@ -1,7 +1,10 @@
 <template>
   <DefaultLayout>
     <template #default>
-      <div class="py-10 px-5 sm:px-6 lg:px-20 xl:px-40 mx-auto max-w-5xl">
+      <div
+        id="toTop"
+        class="py-10 px-5 sm:px-6 lg:px-20 xl:px-40 mx-auto max-w-5xl"
+      >
         <div class="flex flex-col gap-2.5 prose dark:prose-invert">
           <h1 class="font-bold">Privacy Policy for KarirKit</h1>
           <p>

@@ -3,18 +3,20 @@
     <div
       class="flex flex-col gap-4 justify-center items-start px-5 md:px-20 py-5 col-span-1 w-full md:col-span-6 lg:col-span-5"
     >
-      <Image
-        src="/KarirKit-light.png"
-        class="flex mx-auto light:block dark:hidden"
-        width="48"
-        alt="Logo"
-      />
-      <Image
-        src="/KarirKit-dark.png"
-        class="flex mx-auto light:hidden dark:block"
-        width="48"
-        alt="Logo"
-      />
+      <RouterLink to="/" class="flex mx-auto">
+        <Image
+          src="/KarirKit-light.png"
+          class="flex mx-auto light:block dark:hidden"
+          width="48"
+          alt="Logo"
+        />
+        <Image
+          src="/KarirKit-dark.png"
+          class="flex mx-auto light:hidden dark:block"
+          width="48"
+          alt="Logo"
+        />
+      </RouterLink>
       <h3 class="font-bold text-2xl">Sign in to your account</h3>
       <p class="text-sm text-black/60 dark:text-white/60">
         Not a member?
@@ -80,6 +82,25 @@
           type="submit"
         />
       </Form>
+      <Divider
+        align="center"
+        class="!text-sm !bg-transparent"
+        :pt="{ content: { class: '!bg-white dark:!bg-darkprimary' } }"
+      >
+        Or sign in with
+      </Divider>
+      <div class="w-full">
+        <Button
+          variant="outlined"
+          label="Continue with Google"
+          class="!w-full !text-blue-400 dark:text-blue-500 !border-blue-400 dark:!border-blue-500 hover:!bg-black/5 hover:dark:!bg-white/5 hover:!border-blue-600 hover:dark:!border-blue-700"
+          @click="signInWithGoogle"
+        >
+          <template #icon>
+            <Icon icon="material-icon-theme:google" />
+          </template>
+        </Button>
+      </div>
     </div>
     <div class="hidden md:block md:col-span-6 lg:col-span-7">
       <Image
@@ -106,6 +127,7 @@ import SwitchMode from "@/components/SwitchMode.vue";
 import Password from "primevue/password";
 import Message from "primevue/message";
 import Button from "primevue/button";
+import Divider from "primevue/divider";
 import Image from "primevue/image";
 import router from "@/router";
 
@@ -176,7 +198,7 @@ const submitSignIn = async (e: any) => {
       life: 3000,
     });
 
-    authStore.setUser(data.id, data.token, data.name, data.photoUrl);
+    authStore.setUser(data.id, data.token, data.name, data.photoUrl, "local");
     router.push("/dashboard");
   } catch (err: any) {
     toast.add({
@@ -186,6 +208,12 @@ const submitSignIn = async (e: any) => {
       life: 3000,
     });
   }
+};
+
+const signInWithGoogle = () => {
+  // Alih-alih menggunakan fetch, kita arahkan browser langsung ke endpoint otentikasi backend.
+  // Backend kemudian akan menangani redirect ke halaman login Google.
+  window.location.href = `${baseurl}/auth/google`;
 };
 </script>
 <style lang=""></style>
