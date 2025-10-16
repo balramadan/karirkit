@@ -162,7 +162,7 @@ authRouter.get(
 
     // Alihkan pengguna kembali ke frontend dengan token sebagai query parameter.
     // Frontend akan menangani penyimpanan token dan mengarahkan ke dasbor.
-    const clientURL = process.env.CLIENT_URL || "http://localhost:5173";
+    const clientURL = process.env.CLIENT_URL || "https://karir.rundev.tech";
     res.redirect(`${clientURL}/auth/callback?token=${token}`);
   }
 );
@@ -173,7 +173,7 @@ authRouter.get("/logout", sessionMiddleware, (req, res, next) => {
   // HARUS terdaftar di "Allowed Logout URLs" di dasbor Auth0.
   const returnTo = process.env.CLIENT_URL
     ? `${process.env.CLIENT_URL}/login`
-    : "http://localhost:5173/login";
+    : "http://karir.rundev.tech/login";
 
   // Parameter yang diperlukan untuk logout dari Auth0
   const logoutURL = new URL(`https://${process.env.AUTH0_DOMAIN}/v2/logout`);
