@@ -5,18 +5,9 @@ import passport from "passport";
 import Users from "../schema/users.js";
 import Otp from "../schema/otp.js"; // Impor model Otp
 import { sendVerificationEmail } from "../lib/email.js"; // Impor fungsi email
-import session from "express-session";
+import { sessionMiddleware } from "../lib/session.js"; // Impor dari file session
 
 const authRouter = express.Router();
-
-// Konfigurasi session middleware.
-// Ini HANYA akan digunakan untuk alur otentikasi Auth0.
-const sessionMiddleware = session({
-  secret: process.env.SESSION_SECRET || "a-very-secret-key-for-sso", // Ganti dengan secret acak di .env
-  resave: false,
-  saveUninitialized: false,
-  cookie: { secure: process.env.NODE_ENV === "production" }, // Gunakan 'true' di produksi (HTTPS)
-});
 
 // Pendaftaran baru dengan verifikasi email
 authRouter.post("/signup", async (req, res) => {

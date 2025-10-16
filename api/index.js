@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import passport from "passport";
 import connectDB from "./lib/db.js";
+import { sessionMiddleware } from "./lib/session.js";
 import appRouter from "./routes/application.js";
 import scrapeRouter from "./routes/scrape.js";
 import passportConfig from "./lib/passport.js";
@@ -16,7 +17,7 @@ const app = express();
 // const port = 3000;
 
 // Daftar origin yang diizinkan
-const allowedOrigins = ["http://localhost:5173", "https://karirkit.pages.dev"];
+const allowedOrigins = ["http://localhost:5173", "https://karirkit.vercel.app"];
 
 // Middleware
 app.use(
