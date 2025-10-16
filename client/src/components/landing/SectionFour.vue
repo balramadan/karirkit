@@ -5,10 +5,10 @@
         <h2
           class="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl"
         >
-          Mulai dalam 3 Langkah Mudah
+          Get Started in 3 Easy Steps
         </h2>
         <p class="mt-4 text-lg text-gray-600 dark:text-gray-400">
-          Ikuti alur sederhana ini untuk mengorganisir pencarian kerja Anda.
+          Follow these simple steps to organize your job search.
         </p>
       </div>
       <div class="mt-16 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -43,21 +43,21 @@ import { Icon } from "@iconify/vue";
 
 const steps = [
   {
-    title: "1. Buat Akun Gratis",
+    title: "1. Create a Free Account",
     description:
-      "Daftarkan diri Anda dalam sekejap untuk mulai menyimpan dan mengelola semua lamaran pekerjaan.",
+      "Sign up in a flash to start saving and managing all your job applications.",
     icon: "fe:user-plus",
   },
   {
-    title: "2. Tambah Lamaran",
+    title: "2. Add Application",
     description:
-      "Masukkan detail lowongan pekerjaan yang Anda lamar, atau ambil data otomatis dari URL.",
+      "Enter the details of the job vacancy you are applying for, or automatically retrieve the data from the URL.",
     icon: "fluent:document-add-24-regular",
   },
   {
-    title: "3. Lacak Progres",
+    title: "3. Track Progress",
     description:
-      "Gunakan papan Kanban visual untuk memindahkan lamaran sesuai progresnya, dari dilamar hingga diterima.",
+      "Use a visual Kanban board to move applications according to their progress, from applied to accepted.",
     icon: "material-symbols:view-kanban-outline",
   },
 ];

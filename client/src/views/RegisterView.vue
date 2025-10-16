@@ -1,7 +1,7 @@
 <template>
-  <div class="grid grid-cols-1 min-h-screen md:grid-cols-12">
+  <div class="grid grid-cols-1 h-screen overflow-hidden md:grid-cols-12">
     <div
-      class="flex flex-col gap-4 justify-center items-start px-5 md:px-20 py-5 col-span-1 w-full md:col-span-6 lg:col-span-5"
+      class="flex flex-col gap-4 justify-center items-start px-5 md:px-20 py-10 col-span-1 w-full md:col-span-6 lg:col-span-5 overflow-y-auto"
     >
       <Image
         src="/KarirKit-light.png"
@@ -126,7 +126,7 @@
         />
       </Form>
     </div>
-    <div class="hidden md:block md:col-span-6 lg:col-span-7">
+    <div class="hidden md:block md:col-span-6 lg:col-span-7 relative">
       <Image
         src="/andreas-slotosch-w-BSFRpfTWk-unsplash.jpg"
         imageClass="h-full object-cover"

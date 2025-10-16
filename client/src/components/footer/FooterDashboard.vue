@@ -2,7 +2,7 @@
   <div
     class="text-sm flex flex-col sm:flex-row justify-center sm:justify-between items-center gap-2.5 py-5 px-5 sm:px-6 lg:px-20 xl:px-40"
   >
-    <div class="">KarirKit &copy; {{ year }}</div>
+    <div class="">Iqbal Ramadan &copy; {{ year }}</div>
     <div class="flex flex-row items-center gap-2">
       <a
         href="https://iqbalramadan.link/pay"

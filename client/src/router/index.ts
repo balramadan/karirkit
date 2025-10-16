@@ -90,6 +90,27 @@ const router = createRouter({
         requiresAuth: true,
       },
     },
+    {
+      path: "/terms-of-service",
+      name: "tos",
+      component: () => import("@/views/TermsOfService.vue"),
+      meta: {
+        title: "Terms of Service | KarirKit",
+      },
+    },
+    {
+      path: "/privacy-policy",
+      name: "privacy",
+      component: () => import("@/views/PrivacyPolicy.vue"),
+      meta: {
+        title: "Privacy Policy | KarirKit",
+      },
+    },
+    // {
+    //   path: "/:pathMatch(.*)*",
+    //   name: "NotFound",
+    //   component: () => import"
+    // }
   ],
 });
 
