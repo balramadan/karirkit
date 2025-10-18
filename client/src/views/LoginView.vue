@@ -59,6 +59,7 @@
             name="password"
             inputClass="!w-full !text-sm focus:!border-blue-700"
             toggleMask
+            :pt="{ unmaskIcon: { class: '!cursor-pointer' } }"
             :feedback="false"
           />
           <Message
@@ -80,6 +81,7 @@
           class="mt-5 !text-sm w-full !bg-blue-700 !border-none !transition-all !duration-300 !ease-in-out dark:!text-white hover:!bg-blue-900"
           label="Sign in"
           type="submit"
+          :loading="isLoading"
         />
       </Form>
       <Divider
@@ -133,6 +135,7 @@ import router from "@/router";
 
 const toast = useToast();
 const authStore = useAuthStore();
+const isLoading = ref(false);
 
 interface inputType {
   email: string;
@@ -171,6 +174,8 @@ const baseurl = import.meta.env.VITE_API_BASE_URL;
 
 const submitSignIn = async (e: any) => {
   try {
+    isLoading.value = true;
+
     const response = await fetch(`${baseurl}/auth/signin`, {
       method: "POST",
       headers: {
@@ -207,6 +212,8 @@ const submitSignIn = async (e: any) => {
       detail: `${err.message}`,
       life: 3000,
     });
+  } finally {
+    isLoading.value = false;
   }
 };
 

@@ -129,6 +129,7 @@
           class="mt-8 !text-sm w-full !bg-blue-600 dark:!bg-blue-500 !border-none !transition-all !duration-300 !ease-in-out dark:!text-white hover:!bg-blue-800 hover:dark:!bg-blue-700"
           label="Sign up"
           type="submit"
+          :loading="isLoading"
         />
       </Form>
       <Divider
@@ -189,6 +190,7 @@ interface inputType {
 
 const toast = useToast();
 const otpStore = useOtpStore();
+const isLoading = ref(false);
 
 const initialValues = ref({
   name: "",
@@ -242,6 +244,8 @@ const baseurl = import.meta.env.VITE_API_BASE_URL;
 
 const submitSignUp = async (e: any) => {
   try {
+    isLoading.value = true;
+
     const response = await fetch(`${baseurl}/auth/signup`, {
       method: "POST",
       headers: {
@@ -280,6 +284,8 @@ const submitSignUp = async (e: any) => {
       detail: `${err.message}`,
       life: 3000,
     });
+  } finally {
+    isLoading.value = false;
   }
 };
 
