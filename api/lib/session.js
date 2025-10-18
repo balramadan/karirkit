@@ -4,6 +4,10 @@ import MongoStore from "connect-mongo";
 // Konfigurasi session middleware.
 // Ini HANYA akan digunakan untuk alur otentikasi Auth0.
 export const sessionMiddleware = session({
+  // Tambahkan 'proxy: true' agar express-session mempercayai header
+  // yang diatur oleh proxy Vercel (seperti X-Forwarded-Proto)
+  // untuk menentukan apakah koneksi aman (secure).
+  proxy: true,
   secret: process.env.SESSION_SECRET || "a-very-secret-key-for-sso",
   resave: false,
   saveUninitialized: false,
