@@ -21,7 +21,7 @@
           name="otp"
           placeholder="Enter OTP"
           input-class="w-full p-3 border border-gray-300 rounded"
-          type="numeric"
+          integerOnly
           required
           :class="{ 'p-invalid': $form.otp?.invalid }"
           :length="6"
