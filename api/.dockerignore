@@ -1,0 +1,8 @@
+# Abaikan direktori dependensi Node
+node_modules
+
+# Abaikan log
+npm-debug.log*
+
+# Abaikan direktori hasil build (karena akan dibuat di dalam container)
+dist
