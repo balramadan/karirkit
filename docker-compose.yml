@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  # Layanan untuk Backend (API)
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: karirkit-api
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./api/.env
+    depends_on:
+      - mongo
+    networks:
+      - karirkit-net
+
+  # Layanan untuk Frontend (Client)
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: karirkit-client
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    env_file:
+      - ./client/.env
+    depends_on:
+      - api
+    networks:
+      - karirkit-net
+
+  # Layanan untuk Database MongoDB
+  mongo:
+    image: mongo:8.0
+    container_name: karirkit-db
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - karirkit-net
+
+networks:
+  karirkit-net:
+    driver: bridge
+
+volumes:
+  mongo-data:
+    driver: local
